@@ -24,7 +24,10 @@ export default function SignIn() {
 
   const onSubmit = async (data: SignInRequest) => {
     try {
+      console.log("onsubmit");
       signIn();
+
+      console.log(data);
 
       // await signInMutation.mutateAsync(data);
       // setUser({
@@ -54,7 +57,8 @@ export default function SignIn() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(onSubmit);
+
+          handleSubmit(onSubmit)();
         }}
       >
         <input type="text" {...register("username")} />

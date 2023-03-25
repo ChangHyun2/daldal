@@ -32,7 +32,7 @@ export default function Register() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(onSubmit);
+          handleSubmit(onSubmit)();
         }}
       >
         <input type="text" {...register("username")} />
