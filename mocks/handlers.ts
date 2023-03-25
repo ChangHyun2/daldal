@@ -13,6 +13,7 @@ export type Review = {
 };
 
 export const handlers = [
+  rest.post("", (_req, res, ctx) => {}),
   rest.get("https://my.backend/book", (_req, res, ctx) => {
     return res(
       ctx.json<Book>({
