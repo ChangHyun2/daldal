@@ -13,7 +13,7 @@ import { AuthContextProvider } from "@/store/context/AuthContext";
 import Header from "@/components/layout/Header";
 
 if (process.env.NODE_ENV === "development") {
-  // require("../mocks");
+  require("../mocks");
 }
 
 const queryClient = new QueryClient();
