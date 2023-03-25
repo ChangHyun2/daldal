@@ -1,7 +1,8 @@
 import { SignInRequest } from "@/api/auth";
 import { useAuthContext } from "@/store/context/AuthContext";
 import { useSignInMutation } from "@/store/query/auth";
-import { setupServer } from "msw/lib/node";
+import { useSession, signIn, signOut } from "next-auth/react";
+
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -16,19 +17,21 @@ export default function SignIn() {
     formState: { errors },
   } = useForm<SignInRequest>();
 
+  const session = useSession();
+  console.log({ session });
   const { user, setUser } = useAuthContext();
-
   const signInMutation = useSignInMutation();
 
   const onSubmit = async (data: SignInRequest) => {
     try {
-      // await signInMutation.mutateAsync(data);
+      signIn();
 
-      setUser({
-        id: "1",
-        username: data.username,
-      });
-      router.push("/");
+      // await signInMutation.mutateAsync(data);
+      // setUser({
+      //   id: "1",
+      //   username: data.username,
+      // });
+      // router.push("/");
     } catch (e) {
       console.error(e);
     }
@@ -36,7 +39,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      // router.push("/");
     }
   }, [user]);
 

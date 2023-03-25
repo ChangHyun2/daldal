@@ -4,6 +4,7 @@ import {
 } from "@/store/context/NaverMap";
 import "@/styles/globals.css";
 
+import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,23 +13,28 @@ import { AuthContextProvider } from "@/store/context/AuthContext";
 import Header from "@/components/layout/Header";
 
 if (process.env.NODE_ENV === "development") {
-  require("../mocks");
+  // require("../mocks");
 }
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <NaverMapContextProvider>
-          <LoadScript>
-            <Header />
-            <Component {...pageProps} />
-          </LoadScript>
-        </NaverMapContextProvider>
-      </AuthContextProvider>
-    </QueryClientProvider>
+    <SessionProvider session={session}>
+      <QueryClientProvider client={queryClient}>
+        <AuthContextProvider>
+          <NaverMapContextProvider>
+            <LoadScript>
+              <Header />
+              <Component {...pageProps} />
+            </LoadScript>
+          </NaverMapContextProvider>
+        </AuthContextProvider>
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }
 
