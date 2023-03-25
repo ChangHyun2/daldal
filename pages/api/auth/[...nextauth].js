@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import KakaoProvider from "next-auth/providers/kakao";
 import NaverProvider from "next-auth/providers/naver";
+import GitHubProvider from "next-auth/providers/github";
 
 export const authOptions = {
   // Configure one or more authentication providers
@@ -35,7 +36,6 @@ export const authOptions = {
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
       session.accessToken = token.accessToken;
-      console.log(session);
       return session;
     },
   },
