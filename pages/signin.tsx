@@ -1,4 +1,4 @@
-import { SignInRequest } from "@/api/auth";
+import { SignInRequest } from "@/axios/auth";
 import { useAuthContext } from "@/store/context/AuthContext";
 import { useSignInMutation } from "@/store/query/auth";
 import { useSession, signIn, signOut } from "next-auth/react";

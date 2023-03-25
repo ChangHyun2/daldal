@@ -1,4 +1,4 @@
-import { SignInRequest } from "@/api/auth";
+import { SignInRequest } from "@/axios/auth";
 import { useRegisterMutation } from "@/store/query/auth";
 import { setupServer } from "msw/lib/node";
 import { useRouter } from "next/router";

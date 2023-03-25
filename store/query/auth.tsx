@@ -4,7 +4,7 @@ import {
   register,
   signIn,
   signOut,
-} from "@/api/auth";
+} from "@/axios/auth";
 
 import { useMutation } from "@tanstack/react-query";
 
