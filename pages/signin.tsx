@@ -54,13 +54,7 @@ export default function SignIn() {
     <StyledSignIn>
       <h1>로그인</h1>
       <h2>도율님 로그인 api 만들어주세요~~~~</h2>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          handleSubmit(onSubmit)();
-        }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <input type="text" {...register("username")} />
         <input type="password" {...register("password")} />
         <button>로그인</button>
