@@ -23,6 +23,9 @@ export default function Header() {
         <li>
           <button onClick={() => router.push("/register")}>회원가입</button>
         </li>
+        <li>
+          <button onClick={() => router.push("/map")}>네이버 지도 보기</button>
+        </li>
       </ul>
     </Styledheader>
   );

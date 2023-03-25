@@ -1,3 +1,4 @@
+import { useAuthContext } from "@/store/context/AuthContext";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import { useEffect } from "react";
 
