@@ -29,7 +29,12 @@ export default function Register() {
     <StyledRegister>
       <h1>회원가입</h1>
       <h2>도율님 회원가입 api 만들어주세요~~~~</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(onSubmit);
+        }}
+      >
         <input type="text" {...register("username")} />
         <input type="password" {...register("password")} />
         <button>회원가입</button>
