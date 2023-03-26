@@ -20,8 +20,14 @@ export const NaverMapContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [naverMapEnabled, setNaverMapEnabled] = useState(false);
+
   return (
-    <NaverMapContext.Provider value={{ naverMapEnabled, setNaverMapEnabled }}>
+    <NaverMapContext.Provider
+      value={{
+        naverMapEnabled,
+        setNaverMapEnabled,
+      }}
+    >
       {children}
     </NaverMapContext.Provider>
   );

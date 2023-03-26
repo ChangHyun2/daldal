@@ -1,0 +1,294 @@
+[
+  {
+    "y": 37.3670744,
+    "_lat": 37.3670744,
+    "x": 127.1095189,
+    "_lng": 127.1095189,
+    "reverseGeocodeResponse": {
+      "v2": {
+        "status": {
+          "code": 0,
+          "name": "ok",
+          "message": "done"
+        },
+        "results": [
+          {
+            "name": "legalcode",
+            "code": {
+              "id": "4113510300",
+              "type": "L",
+              "mappingId": "02135103"
+            },
+            "region": {
+              "area0": {
+                "name": "kr",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              },
+              "area1": {
+                "name": "경기도",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.550802,
+                    "y": 37.4363177
+                  }
+                },
+                "alias": "경기"
+              },
+              "area2": {
+                "name": "성남시 분당구",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.1189255,
+                    "y": 37.3828195
+                  }
+                }
+              },
+              "area3": {
+                "name": "정자동",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.1115333,
+                    "y": 37.3614503
+                  }
+                }
+              },
+              "area4": {
+                "name": "",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "admcode",
+            "code": {
+              "id": "4113554500",
+              "type": "S",
+              "mappingId": "02135103"
+            },
+            "region": {
+              "area0": {
+                "name": "kr",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              },
+              "area1": {
+                "name": "경기도",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.550802,
+                    "y": 37.4363177
+                  }
+                },
+                "alias": "경기"
+              },
+              "area2": {
+                "name": "성남시 분당구",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.1189255,
+                    "y": 37.3828195
+                  }
+                }
+              },
+              "area3": {
+                "name": "정자동",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.1115333,
+                    "y": 37.3614503
+                  }
+                }
+              },
+              "area4": {
+                "name": "",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "address": {
+          "jibunAddress": "경기도 성남시 분당구 정자동  ",
+          "roadAddress": ""
+        }
+      }
+    }
+  },
+  {
+    "y": 37.3487906,
+    "_lat": 37.3487906,
+    "x": 127.1095189,
+    "_lng": 127.1095189
+  },
+  {
+    "y": 37.3388281,
+    "_lat": 37.3388281,
+    "x": 127.1019658,
+    "_lng": 127.1019658,
+    "reverseGeocodeResponse": {
+      "v2": {
+        "status": {
+          "code": 0,
+          "name": "ok",
+          "message": "done"
+        },
+        "results": [
+          {
+            "name": "legalcode",
+            "code": {
+              "id": "4146510300",
+              "type": "L",
+              "mappingId": "02465103"
+            },
+            "region": {
+              "area0": {
+                "name": "kr",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              },
+              "area1": {
+                "name": "경기도",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.550802,
+                    "y": 37.4363177
+                  }
+                },
+                "alias": "경기"
+              },
+              "area2": {
+                "name": "용인시 수지구",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.0977799,
+                    "y": 37.3222422
+                  }
+                }
+              },
+              "area3": {
+                "name": "동천동",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.0993083,
+                    "y": 37.3418944
+                  }
+                }
+              },
+              "area4": {
+                "name": "",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "admcode",
+            "code": {
+              "id": "4146556000",
+              "type": "S",
+              "mappingId": "02465103"
+            },
+            "region": {
+              "area0": {
+                "name": "kr",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              },
+              "area1": {
+                "name": "경기도",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.550802,
+                    "y": 37.4363177
+                  }
+                },
+                "alias": "경기"
+              },
+              "area2": {
+                "name": "용인시 수지구",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.0977799,
+                    "y": 37.3222422
+                  }
+                }
+              },
+              "area3": {
+                "name": "동천동",
+                "coords": {
+                  "center": {
+                    "crs": "EPSG:4326",
+                    "x": 127.0993083,
+                    "y": 37.3418944
+                  }
+                }
+              },
+              "area4": {
+                "name": "",
+                "coords": {
+                  "center": {
+                    "crs": "",
+                    "x": 0,
+                    "y": 0
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "address": {
+          "jibunAddress": "경기도 용인시 수지구 동천동  ",
+          "roadAddress": ""
+        }
+      }
+    }
+  }
+]
