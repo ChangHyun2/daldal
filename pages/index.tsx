@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import Header2 from "@/components/layout/Header2";
-import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { user } = useAuthContext();

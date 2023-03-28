@@ -54,6 +54,8 @@ export const AuthContextProvider = ({
     };
     const { email } = session.data.user;
 
+    if (!provider) return;
+
     fetch("http://localhost:12333/api/v1/auth/login", {
       method: "POST",
       headers: {
