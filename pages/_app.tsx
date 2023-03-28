@@ -8,7 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import { AuthContextProvider } from "@/store/context/AuthContext";
 import Header from "@/components/layout/Header";
 
@@ -28,7 +28,7 @@ export default function App({
         <AuthContextProvider>
           <NaverMapContextProvider>
             <LoadScript>
-              <Header />
+              {/* <Header /> */}
               <Component {...pageProps} />
             </LoadScript>
           </NaverMapContextProvider>
