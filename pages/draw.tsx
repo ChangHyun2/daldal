@@ -10,6 +10,7 @@ import Search from "@/components/map/Search";
 import Script from "next/script";
 import { isFunctionDeclaration } from "typescript";
 import {
+  EmojiFoodBeverage,
   RefreshOutlined,
   Router,
   WbIncandescentTwoTone,
@@ -82,7 +83,7 @@ export default function Map() {
   }, [map]);
 
   const submit = async () => {
-    console.log("submit");
+    console.log(geocoderEnabled);
     if (!geocoderEnabled) return;
 
     const firstPoint = path[0];
@@ -170,7 +171,7 @@ export default function Map() {
           </li>
         </ul>
 
-        <button onClick={submit} disabled={path.length < 2}>
+        <button onClick={submit} disabled={!geocoderEnabled || path.length < 2}>
           저장하기
         </button>
       </StyledDraw>
