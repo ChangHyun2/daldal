@@ -39,7 +39,6 @@ export const AuthContextProvider = ({
   const [user, setUser] = useState<Member | null>(null);
   const session = useSession();
   const [provider, setProvider] = useState<Provider | null>(null);
-  const refreshToken = null;
 
   const signIn = (provider: Provider) => {
     setProvider(provider);
@@ -56,16 +55,23 @@ export const AuthContextProvider = ({
 
     if (!provider) return;
 
-    fetch("http://localhost:12333/api/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        loginType: provider.toUpperCase(),
-        email,
-      }),
-    }).then(async (res) => {
+    fetch(
+      `${
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:12333"
+          : "https://daldal.k-net.kr"
+      }/api/v1/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          loginType: provider.toUpperCase(),
+          email,
+        }),
+      }
+    ).then(async (res) => {
       const {
         member,
         token: { accessToken },
