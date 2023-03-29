@@ -8,11 +8,18 @@ import { CloseOutlined } from "@mui/icons-material";
 import { useAuthContext } from "@/store/context/AuthContext";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-export default function Signin({
-  providers,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { signIn } = useAuthContext();
+export default function Signin() {
+  const { user, signIn } = useAuthContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
 
   return (
     <StyledSignIn>
@@ -38,21 +45,6 @@ export default function Signin({
       </div>
     </StyledSignIn>
   );
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (session) {
-    console.log({ session });
-    return { redirect: { destination: "/" } };
-  }
-
-  const providers = await getProviders();
-
-  return {
-    props: { providers: providers ?? [] },
-  };
 }
 
 const StyledSignIn = styled.div`
