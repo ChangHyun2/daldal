@@ -1,8 +1,6 @@
 import { CoursePoint } from "@/data/backend/course";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import styled from "@emotion/styled";
-import { access } from "fs";
-import path from "path";
 import { useEffect, useRef, useState } from "react";
 
 type Point = { x: number; y: number };

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import s from "csd";
-import Image from "next/image";
+import img from "next/image";
 import Header2 from "@/components/layout/Header2";
 import { useAuthContext } from "@/store/context/AuthContext";
 
@@ -16,51 +16,58 @@ import { Review, getMyReview, getReview } from "@/data/axios/review";
 
 export default function Courses() {
   const { user } = useAuthContext();
-
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      router.push("/");
+      return;
+    }
 
     getCourses().then(({ data }) => setCourses(data));
     getMyReview().then(({ data }) => setReviews(data));
   }, [user]);
 
-  if (!user) return;
+  if (!user) return null;
 
   return (
     <StyledCourses>
       <Header2 />
       <h2>
         <span>
-          🔥 <b>달달</b>님, <b>49km</b>를 뛰셨네요!
+          🔥 <b>{user ? "달달" : ""}</b>님, <b>49km</b>를 뛰셨네요!
         </span>
       </h2>
       <div className="courses">
         <h3>저장 된 코스</h3>
-        <StyledCards>
-          {courses.slice(0, 3).map((course) => (
-            <li key={course.id}>
-              <CourseCard
-                course={course}
-                href={`/reviews/create/${course.id}`}
-                readOnly
-              />
-            </li>
-          ))}
-        </StyledCards>
+        {user && (
+          <StyledCards>
+            {courses.slice(0, 3).map((course) => (
+              <li key={course.id}>
+                <CourseCard
+                  course={course}
+                  href={`/reviews/create/${course.id}`}
+                  readOnly
+                />
+              </li>
+            ))}
+          </StyledCards>
+        )}
       </div>
       <div className="divider"></div>
       <div className="courses">
         <h3>게시한 리뷰</h3>
-        <StyledCards>
-          {reviews.map((review) => (
-            <li key={review.id}>
-              <ReviewCard review={review} href={`/reviews/${review.id}`} />
-            </li>
-          ))}
-        </StyledCards>
+        {user && (
+          <StyledCards>
+            {reviews.map((review) => (
+              <li key={review.id}>
+                <ReviewCard review={review} href={`/reviews/${review.id}`} />
+              </li>
+            ))}
+          </StyledCards>
+        )}
       </div>
     </StyledCourses>
   );
@@ -130,18 +137,18 @@ export function CourseCard({
           <div className="body">
             <div className="head">
               <div className="address">
-                <img src="/icons/pin_drop.svg" />
+                <img alt="userimage" src="/icons/pin_drop.svg" />
                 <div>{course.name}</div>
               </div>
             </div>
             <div className="foot">
               <div className="estimate">
                 <div>
-                  <img src="/icons/Timeline.svg" />
+                  <img alt="userimage" src="/icons/Timeline.svg" />
                   <div>{(course.distance / 1000).toFixed(1)}Km</div>
                 </div>
                 <div>
-                  <img src="/icons/Access_time.svg" />
+                  <img alt="userimage" src="/icons/Access_time.svg" />
                   <div>
                     {estimate.hour ? estimate.hour + "시 " : ""}
                     {estimate.minute ? estimate.minute + "분" : ""}
@@ -150,7 +157,12 @@ export function CourseCard({
               </div>
               <button className="review-btn">
                 <span>
-                  <img src="/icons/Edit.svg" width={24} height={24} />
+                  <img
+                    alt="userimage"
+                    src="/icons/Edit.svg"
+                    width={24}
+                    height={24}
+                  />
                 </span>
                 <span>평가하기</span>
               </button>
@@ -269,44 +281,41 @@ export function ReviewCard({
   readOnly?: boolean;
   href: string;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState(review.isBookmarked);
   const r = review;
-  const router = useRouter();
-
   const courseName = r.course.name;
   const estimate = getEstimate(r.course.distance);
-  const { points } = r.course;
 
   return (
     <Link href={href}>
       <StyledReviewCrad>
         <div className="card">
-          <img className="img" src={review.imageUrl} />
+          <img className="img" src={review.imageUrl} alt="user review image" />
           <div className="body">
             <div className="head">
               <div className="address">
-                <img src="/icons/pin_drop.svg" />
+                <img alt="userimage" src="/icons/pin_drop.svg" />
                 <div>{courseName}</div>
               </div>
               <div className="favourite">
-                <img src={"/icons/favorite_filled.svg"} />
+                <img alt="userimage" src={"/icons/favorite_filled.svg"} />
                 <span>{review.favourite}</span>
               </div>
             </div>
             <div className="foot">
               <div className="estimate">
                 <div>
-                  <img src="/icons/Timeline.svg" />
+                  <img alt="userimage" src="/icons/Timeline.svg" />
                   <div>{(r.course.distance / 1000).toFixed(1)}Km</div>
                 </div>
                 <div>
-                  <img src="/icons/Access_time.svg" />
+                  <img alt="userimage" src="/icons/Access_time.svg" />
                   <div>
-                    {estimate.hour ? estimate.hour + "시 " : ""}
-                    {estimate.minute ? estimate.minute + "분" : ""}
+                    {estimate.hour ? estimate.hour + ":" : ""}
+                    {estimate.minute ? estimate.minute + "" : ""}
                   </div>
                 </div>
               </div>
+              <div className="createdAt">{review.createAt.split(" ")[0]}</div>
             </div>
           </div>
         </div>
@@ -373,6 +382,8 @@ const StyledReviewCrad = styled.div`
 
       .foot {
         position: relative;
+        ${s.rowSpaceBetween}
+        align-items:flex-end;
 
         .estimate {
           > div {
@@ -388,21 +399,8 @@ const StyledReviewCrad = styled.div`
             }
           }
         }
-
-        .features {
-          position: absolute;
-          ${s.row}
-          right: 0;
-          bottom: 26px;
-
-          li {
-            width: 20%;
-
-            img {
-              width: 24px;
-              height: 24px;
-            }
-          }
+        .createdAt {
+          color: #9e9e9e;
         }
       }
     }

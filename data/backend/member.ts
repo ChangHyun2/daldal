@@ -2,9 +2,10 @@ export type Member = {
   id: string;
   loginType: "GOOGLE" | "NAVER" | "GITHUB";
   email: string;
+  profileImageUrl?: string;
   username?: string;
   nickname?: string;
-  gender?: "male" | "female";
+  gender?: "MALE" | "FEMALE";
 };
 
 export const MOCK_USER: Member = {

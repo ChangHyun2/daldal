@@ -3,14 +3,11 @@ import s from "csd";
 import Header2 from "@/components/layout/Header2";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import img from "next/image";
 import { useRouter } from "next/router";
-import { Course, MOCK_COURSE } from "@/data/backend/course";
-import { getCourse, getCourses } from "@/data/axios/course";
-import { AxiosError } from "axios";
+import { Course } from "@/data/backend/course";
+import { getCourse } from "@/data/axios/course";
 import { useAuthContext } from "@/store/context/AuthContext";
-
-import { text } from "stream/consumers";
 import { FEATURES, postReview } from "@/data/axios/review";
 import { getCenter } from "@/components/map/naverMap";
 
@@ -18,11 +15,8 @@ export default function CourseDetail() {
   const { naverMapEnabled } = useNaverMapContext();
   const router = useRouter();
   const { id } = router.query;
-  const { user } = useAuthContext();
   const cardBodyRef = useRef<HTMLDivElement>(null);
   const [course, setCourse] = useState<Course | null>(null);
-  const [naverMapHeight, setNaverMapHeight] = useState("0px");
-  const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [content, setContent] = useState("");
@@ -31,6 +25,13 @@ export default function CourseDetail() {
   );
   const [map, setMap] = useState<naver.maps.Map | null>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const { user } = useAuthContext();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
+  }, [user]);
 
   // init naver map
   useEffect(() => {
@@ -74,6 +75,7 @@ export default function CourseDetail() {
 
   useEffect(() => {
     if (!user) return;
+
     (async () => {
       try {
         if (typeof id !== "string") return;
@@ -123,8 +125,8 @@ export default function CourseDetail() {
           new Blob(
             [
               JSON.stringify({
-                content: "asd",
-                features: ["TOILET"],
+                content,
+                features,
               }),
             ],
             {
@@ -139,6 +141,17 @@ export default function CourseDetail() {
         if (status === 200) {
           router.push(`/reviews/${data.id}`);
         }
+      } else {
+        window.alert(
+          ` ${[
+            { value: file, label: "기념 사진" },
+            { value: content, label: "한 줄 일기" },
+            { value: features.length, label: "코스의 특징" },
+          ]
+            .filter((_) => !Boolean(_.value))
+            .map((_) => _.label)
+            .join(",")}을 입력해 주세요.`
+        );
       }
     } catch (e) {
       window.alert(e);
@@ -172,6 +185,8 @@ export default function CourseDetail() {
     });
   }, [course, map]);
 
+  if (!user) return;
+
   return (
     <form onSubmit={handleSubmit}>
       <StyledHeader />
@@ -180,7 +195,7 @@ export default function CourseDetail() {
           <div className="card card1">
             <div className="card-head">
               <h1>{course?.name}</h1>
-              <div className="date">2023-03-02</div>
+              <div className="date">{new Date().toLocaleDateString()}</div>
             </div>
             <div className="card-body">
               <div className="map">
@@ -227,7 +242,7 @@ export default function CourseDetail() {
                       )
                     }
                   >
-                    <Image
+                    <img
                       width={64}
                       height={64}
                       src={`/icons/${
@@ -249,10 +264,15 @@ export default function CourseDetail() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                 />
-                <span>{text.length}/50자</span>
+                <span>{content.length}/50자</span>
               </div>
             </div>
-            <button type="submit">게시하기</button>
+            <button
+              type="submit"
+              disabled={!(features.length && Boolean(content) && Boolean(file))}
+            >
+              게시하기
+            </button>
           </div>
         </div>
       </StyledCourseDetail>
@@ -421,7 +441,8 @@ const StyledCourseDetail = styled.div`
       ${s.col}
       justify-content:space-between;
 
-      textarea {
+      .textarea {
+        position: relative;
         border: 1px solid #9e9e9e;
         border-radius: 8px;
         width: 100%;

@@ -1,8 +1,6 @@
-import { AxiosResponse } from "axios";
-
 import { Token } from "../backend/token";
 import { Member } from "../backend/member";
-import { daldalAxios } from "./instance";
+import { daldalAxios, nextAxios } from "./instance";
 
 export type LoginType = "GOOGLE" | "NAVER" | "GITHUB";
 
@@ -18,3 +16,6 @@ export type LoginResponse = {
 
 export const login = (loginRequest: LoginRequest) =>
   daldalAxios.post<LoginResponse>("/auth/login", loginRequest);
+
+export const nextLogin = (loginRequest: LoginRequest) =>
+  nextAxios.post<LoginResponse>("/login", loginRequest);

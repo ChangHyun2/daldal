@@ -1,7 +1,16 @@
 import { AxiosResponse } from "axios";
-import { daldalAxios } from "./instance";
+import { daldalAxios, nextAxios } from "./instance";
 import { Token } from "../backend/token";
+import { Member } from "../backend/member";
 
-export type ReissueResponse = AxiosResponse<Token>;
+export type ReissueRequest = { refreshToken: string };
+export type ReissueResponse = {
+  token: Token;
+  member: Member;
+};
 
-export const reissuse = () => daldalAxios.post("/reissue");
+export const reissuse = (reissueRequest: ReissueRequest) =>
+  daldalAxios.post<ReissueResponse>("/reissue", reissueRequest);
+
+export const nextReissue = (reissueRequest: ReissueRequest) =>
+  nextAxios.post<ReissueResponse>("/reissue", reissueRequest);

@@ -1,7 +1,5 @@
-import { Pagination } from "@/data/backend/pagination";
-import { Review, ReviewFeature, ReviewSentiment } from ".";
+import { Review, ReviewFeature } from ".";
 import { daldalAxios } from "../instance";
-import { AxiosResponse } from "axios";
 
 export const getReviewFilter = (
   getReviewFilterRequest: GetReviewFilterRequest

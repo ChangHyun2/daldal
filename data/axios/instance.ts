@@ -15,6 +15,20 @@ export const daldalAxios = axios.create({
   },
 });
 
+// next.env "https://daldal.k-net.kr/api/v1"
+export const nextAxios = axios.create({
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3333/api"
+      : "https://daldal.vercel.app/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  paramsSerializer: {
+    serialize: (params) => qs.stringify(params),
+  },
+});
+
 export const setToken = (token: string | null) => {
   daldalAxios.defaults.headers["Authorization"] = token
     ? `Bearer ${token}`

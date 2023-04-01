@@ -1,9 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import s from "csd";
-import { Button } from "@mui/material";
-import path from "path";
-import { NearMe } from "@mui/icons-material";
 
 const initialNaverObjects = {
   markers: [],

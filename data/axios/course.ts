@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import { Course } from "../backend/course";
 import { daldalAxios } from "./instance";
 

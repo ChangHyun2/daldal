@@ -6,22 +6,47 @@ import { FEATURES, Review, getReview } from "@/data/axios/review";
 import NaverMap from "@/components/map/naverMap";
 import { useAuthContext } from "@/store/context/AuthContext";
 import Header2 from "@/components/layout/Header2";
+import img from "next/image";
+import { getEstimate } from "@/utils/getEstimate";
+import { f } from "msw/lib/glossary-de6278a9";
+import { favouriteDown, favouriteUp } from "@/data/axios/favourite";
+import { bookmarkDown, bookmarkUp } from "@/data/axios/bookmark";
 
 export default function ReviewDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [review, setReview] = useState<Review | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+
   const { user } = useAuthContext();
   const [commentValue, setCommentValue] = useState("");
+
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(
+    review?.isBookmarked || false
+  );
+  const [isFavourite, setIsFavorite] = useState<boolean>(
+    review?.isFavorite || false
+  );
+
+  const favoriteOthers = Math.min(
+    (review?.favourite || 0) + (isFavourite ? -1 : 0),
+    0
+  );
+  const bookmarkOthers = Math.min(
+    (review?.course?.bookamark || 0) + (isBookmarked ? -1 : 0),
+    0
+  );
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (typeof id !== "string") return;
 
     getReview(id).then(({ data }) => {
       if (data) {
-        setReview({ ...data, features: FEATURES.map((f) => f.name) });
+        setReview(data);
         setIsFavorite(data.isFavorite);
         setIsBookmarked(data.isBookmarked);
       } else {
@@ -33,46 +58,91 @@ export default function ReviewDetail() {
   if (review === null) {
     return null;
   }
+  if (!user) return null;
 
   const isMyReview = review?.member.email === user?.email;
+
+  const estimate = getEstimate(review.course.distance); // km/h
 
   return (
     <StyledReviewDetail>
       <Header2 />
       <div className="header">
         <div className="header-left">
-          <h1>
-            {review.course.name || "서울시 송파구 잠실동 서울시 광진구 자양동"}
-          </h1>
-          <span>data</span>
+          <h1>{review.course.name || ""}</h1>
+          <span>{review.createAt.split(" ")[0]}</span>
         </div>
-        <StyledActions>
-          <div>
-            <span>
-              <img src={"/icons/favorite_filled.svg"} />
-            </span>
-            <span>{(review.favourite || 0) + (isFavorite ? 1 : 0)}</span>
-          </div>
-          <div>
-            <span>
-              <img src={`/icons/Bookmark_filled.svg`} />
-            </span>
-            <span>
-              {(review.course.bookamark || 0) + (isBookmarked ? 1 : 0)}
-            </span>
-          </div>
-        </StyledActions>
+        {isMyReview ? (
+          <StyledActions>
+            <div>
+              <span>
+                <img alt="userimage" src={"/icons/favorite_filled.svg"} />
+              </span>
+              <span>{(review.favourite || 0) + (isFavourite ? 1 : 0)}</span>
+            </div>
+            <div>
+              <span>
+                <img alt="userimage" src={`/icons/Bookmark_filled.svg`} />
+              </span>
+              <span>
+                {(review.course.bookamark || 0) + (isBookmarked ? 1 : 0)}
+              </span>
+            </div>
+          </StyledActions>
+        ) : (
+          <StyledActions>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFavorite((prev) => !prev);
+                isFavourite ? favouriteDown(review.id) : favouriteUp(review.id);
+              }}
+            >
+              <span>
+                <img
+                  src={`/icons/${
+                    isFavourite ? "favorite_filled" : "favorite_outline"
+                  }.svg`}
+                  alt="userimage"
+                />
+              </span>
+              <span>{favoriteOthers + (isFavourite ? 1 : 0)}</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsBookmarked((prev) => !prev);
+                isBookmarked
+                  ? bookmarkUp(review.course.id)
+                  : bookmarkDown(review.course.id);
+              }}
+            >
+              <span>
+                <img
+                  src={`/icons/Bookmark_${
+                    isBookmarked ? "filled" : "outline"
+                  }.svg`}
+                  alt="userimage"
+                />
+              </span>
+              <span>{bookmarkOthers + (isBookmarked ? 1 : 0)}</span>
+            </button>
+          </StyledActions>
+        )}
       </div>
       <div className="body">
         <div className="left">
           <div className="estimate">
             <div className="dist">
               <div className="label">거리</div>
-              <div>{review.course.distance}</div>
+              <div>{(review.course.distance / 1000).toFixed(1)}Km</div>
             </div>
             <div className="time">
               <div className="label">예상 시간</div>
-              <div>{review.course.duration}</div>
+              <div>
+                {(estimate.hour ? estimate.hour + ":" : "00:") +
+                  (estimate.minute ? estimate.minute : "")}
+              </div>
             </div>
           </div>
           <div>
@@ -83,6 +153,7 @@ export default function ReviewDetail() {
                 return (
                   <li key={feature}>
                     <img
+                      alt="userimage"
                       src={`/icons/feature_large_red/${f?.icon || ""}.svg`}
                     />
                     <div>{f ? `${f.label}이 있어요.` : ""}</div>
@@ -93,8 +164,12 @@ export default function ReviewDetail() {
           </div>
           <div className="diary">
             <h3>한줄 일기</h3>
-            <img src={review.imageUrl} />
-            <div className="content">{review.content}</div>
+            <img alt="userimage" src={review.imageUrl} />
+
+            <div className="content">
+              <div className="sentiment">{review.sentiment}</div>
+              <p>{review.content}</p>
+            </div>
           </div>
         </div>
         <div className="right">
@@ -102,7 +177,7 @@ export default function ReviewDetail() {
           <h3>댓글</h3>
           {!isMyReview && (
             <div className="comments-create">
-              <img src={"/icons/cafe.svg"} />
+              <img alt="userimage" src={"/icons/cafe.svg"} />
               <input
                 placeholder="댓글을 남겨주세요"
                 value={commentValue}
@@ -114,7 +189,7 @@ export default function ReviewDetail() {
           <ul className="comments">
             {[1, 1, 2, 3, 1, 2].map((c, i) => (
               <li key={i}>
-                <img src={"/icons/cafe.svg"} />
+                <img alt="userimage" src={"/icons/cafe.svg"} />
                 <div>
                   <div className="name">
                     <div>{"ㅁㅇㄴㄹ"}</div>
@@ -225,6 +300,16 @@ const StyledReviewDetail = styled.div`
 
       .content {
         margin-left: 16px;
+
+        .sentiment {
+          width: 85px;
+          height: 24px;
+          background: #e9eafc;
+          border: 1px solid #7884ed;
+          border-radius: 8px;
+          padding: 4px 8px;
+          margin-bottom: 4px;
+        }
       }
     }
 

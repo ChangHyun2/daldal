@@ -1,20 +1,38 @@
-import { getProviders, useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 
 import styled from "styled-components";
 import s from "csd";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { IconButton } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
 import { useAuthContext } from "@/store/context/AuthContext";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { LoginType } from "@/data/axios/login";
 
 export default function Signin() {
-  const { user, signIn } = useAuthContext();
+  const { user, login } = useAuthContext();
   const router = useRouter();
+  const session = useSession();
 
+  // session에 인증 확인되면 로그인 시도
+  useEffect(() => {
+    if (!session || !session.data) return;
+
+    const { provider, user } = session.data as typeof session.data & {
+      provider: LoginType;
+    };
+
+    if (!user || !provider || !user.email) {
+      return;
+    }
+
+    login({
+      loginType: provider,
+      email: user.email,
+    });
+  }, [session]);
+
+  // 로그인 되면 홈 페이지로 이동
   useEffect(() => {
     if (user) {
       router.push("/");

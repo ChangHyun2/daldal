@@ -1,4 +1,3 @@
-import { Comment } from "@/data/backend/comment";
 import { Review } from ".";
 import { daldalAxios } from "../instance";
 

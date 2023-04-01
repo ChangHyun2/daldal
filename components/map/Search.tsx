@@ -1,8 +1,7 @@
 import { SearchOutlined } from "@mui/icons-material";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import s from "csd";
-import Script from "next/script";
 
 let timer: NodeJS.Timeout | undefined;
 

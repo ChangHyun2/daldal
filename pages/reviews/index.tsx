@@ -16,6 +16,7 @@ import { Router, useRouter } from "next/router";
 import { bookmarkDown, bookmarkUp } from "@/data/axios/bookmark";
 import Header2 from "@/components/layout/Header2";
 import Link from "next/link";
+import img from "next/image";
 
 export default function Reviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -106,11 +107,20 @@ export function ReviewCard({
   const [isBookmarked, setIsBookmarked] = useState(review.isBookmarked);
   const r = review;
   const router = useRouter();
+  const { user } = useAuthContext();
 
   const courseName = r.course.name;
 
   const estimate = getEstimate(r.course.distance);
   const { points } = r.course;
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/");
+    }
+  }, [user]);
+
+  if (!user) return null;
 
   return (
     <Link href={href}>
@@ -120,7 +130,7 @@ export function ReviewCard({
           <div className="body">
             <div className="head">
               <div className="address">
-                <img src="/icons/pin_drop.svg" />
+                <img alt="userimage" src="/icons/pin_drop.svg" />
                 <div>{courseName}</div>
               </div>
               {readOnly ? null : (
@@ -136,6 +146,7 @@ export function ReviewCard({
                   }}
                 >
                   <img
+                    alt="userimage"
                     src={`/icons/Bookmark_${
                       isBookmarked ? "filled" : "outline"
                     }.svg`}
@@ -147,11 +158,11 @@ export function ReviewCard({
             <div className="foot">
               <div className="estimate">
                 <div>
-                  <img src="/icons/Timeline.svg" />
+                  <img alt="userimage" src="/icons/Timeline.svg" />
                   <div>{(r.course.distance / 1000).toFixed(1)}Km</div>
                 </div>
                 <div>
-                  <img src="/icons/Access_time.svg" />
+                  <img alt="userimage" src="/icons/Access_time.svg" />
                   <div>
                     {estimate.hour ? estimate.hour + "시 " : ""}
                     {estimate.minute ? estimate.minute + "분" : ""}
@@ -161,7 +172,12 @@ export function ReviewCard({
               {readOnly ? (
                 <button className="review-btn">
                   <span>
-                    <img src="/icons/Edit.svg" width={24} height={24} />
+                    <img
+                      alt="userimage"
+                      src="/icons/Edit.svg"
+                      width={24}
+                      height={24}
+                    />
                   </span>
                   <span>평가하기</span>
                 </button>
@@ -169,7 +185,10 @@ export function ReviewCard({
                 <ul className="features">
                   {r.features.map((f: string, i: number) => (
                     <li key={i}>
-                      <img src={`/icons/feature_large_gray/angle-acute.svg`} />
+                      <img
+                        alt="userimage"
+                        src={`/icons/feature_large_gray/angle-acute.svg`}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -376,17 +395,17 @@ const StyledSlide = ({ review }: { review: any }) => {
         <div className="badge">{r.course.name}</div>
         <div className="right">
           <div className="bookmark">
-            <img src={`/icons/bookmark_filled.svg`} />
+            <img src={`/icons/bookmark_filled.svg`} alt="userimage" />
             <div>{r.favourite}</div>
           </div>
           <div className="info">
             <div className="estimate">
               <div>
-                <img src="/icons/Timeline.svg" />
+                <img src="/icons/Timeline.svg" alt="userimage" />
                 <div>{r.course.distance}</div>
               </div>
               <div>
-                <img src="/icons/Access_time.svg" />
+                <img src="/icons/Access_time.svg" alt="userimage" />
                 <div>{r.course.duration}</div>
               </div>
             </div>
@@ -394,14 +413,14 @@ const StyledSlide = ({ review }: { review: any }) => {
               <ul>
                 {FEATURES.slice(0, 5).map((f) => (
                   <li key={f.name}>
-                    <img src={`/icons/Timeline.svg`} />
+                    <img src={`/icons/Timeline.svg`} alt="userimage" />
                   </li>
                 ))}
               </ul>
               <ul>
                 {FEATURES.slice(5).map((f) => (
                   <li key={f.name}>
-                    <img src={`/icons/Timeline.svg`} />
+                    <img src={`/icons/Timeline.svg`} alt="userimage" />
                   </li>
                 ))}
               </ul>
@@ -421,13 +440,14 @@ const StyledSlide = ({ review }: { review: any }) => {
                     src={`/icons/Bookmark_${
                       isBookmarked ? "filled" : "outline"
                     }.svg`}
+                    alt="userimage"
                   />
                 </span>
                 <span>저장하기</span>
               </button>
               <button onClick={() => router.push(`/reviews/${r.id}`)}>
                 <span>
-                  <img src={`/icons/open_in_new_red.svg`} />
+                  <img src={`/icons/open_in_new_red.svg`} alt="userimage" />
                 </span>
                 <span> 상세보기</span>
               </button>

@@ -1,7 +1,7 @@
 import { useAuthContext } from "@/store/context/AuthContext";
 import styled from "styled-components";
 import s from "csd";
-import Image from "next/image";
+import img from "next/image";
 import { useEffect, useState } from "react";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import Header2 from "@/components/layout/Header2";
@@ -148,11 +148,9 @@ function ReviewItem({ review }: { review: Review }) {
   const [isBookmarked, setIsBookmarked] = useState<boolean>(
     review.isBookmarked
   );
+  const [isFavourite, setIsFavorite] = useState<boolean>(review.isFavorite);
 
   const { user } = useAuthContext();
-
-  const [isFavourite, setIsFavorite] = useState<boolean>(review.isFavorite);
-  const router = useRouter();
 
   const favoriteOthers = Math.min(review.favourite + (isFavourite ? -1 : 0), 0);
   const bookmarkOthers = Math.min(
@@ -164,7 +162,13 @@ function ReviewItem({ review }: { review: Review }) {
     <li>
       <div className="top">
         <div className="top-left">
-          <img className="avatar" src={review.imageUrl} />
+          <img
+            width={32}
+            height={32}
+            className="avatar"
+            src={review.imageUrl}
+            alt="userimage"
+          />
           <div>
             <b>
               {review.member.nickname || review.member.username || "홍길동"}
@@ -183,12 +187,12 @@ function ReviewItem({ review }: { review: Review }) {
       </div>
       <ul className="body">
         <li>
-          <img className="img" src={review.imageUrl} />
+          <img className="img" src={review.imageUrl} alt="userimage" />
         </li>
         <li className="navermap">
           <NaverMap coursePoints={review.course.points} disabled />
           <div className="address">
-            <img src="/icons/pin_drop.svg" />
+            <img src="/icons/pin_drop.svg" alt="userimage" />
 
             <span>{review.course.name || "봉천동"}</span>
           </div>
@@ -198,7 +202,7 @@ function ReviewItem({ review }: { review: Review }) {
         <ul className="features">
           {review.features.map((feature) => (
             <li key={feature}>
-              <Image
+              <img
                 width={24}
                 height={24}
                 src={`/icons/${
@@ -223,6 +227,7 @@ function ReviewItem({ review }: { review: Review }) {
                   src={`/icons/${
                     isFavourite ? "favorite_filled" : "favorite_outline"
                   }.svg`}
+                  alt="userimage"
                 />
               </span>
               <span>{favoriteOthers + (isFavourite ? 1 : 0)}</span>
@@ -241,6 +246,7 @@ function ReviewItem({ review }: { review: Review }) {
                   src={`/icons/Bookmark_${
                     isBookmarked ? "filled" : "outline"
                   }.svg`}
+                  alt="userimage"
                 />
               </span>
               <span>{bookmarkOthers + (isBookmarked ? 1 : 0)}</span>
@@ -440,13 +446,15 @@ export async function getServerSideProps({
       serialize: (params) => qs.stringify(params),
     },
   });
+  console.log("login start");
 
   const { data } = await daldalAxios.post("/auth/login", {
     email: "jchangh2@gmail.com",
     loginType: "GOOGLE",
+    secretKey: process.env.DALDAL_SECRET_KEY,
   });
 
-  console.log({ data });
+  console.log("login end");
 
   const setToken = (token: string | null) => {
     daldalAxios.defaults.headers["Authorization"] = token
@@ -458,6 +466,7 @@ export async function getServerSideProps({
   const { token } = data;
   setToken(token.accessToken);
 
+  console.log("review start");
   const {
     data: { content },
   } = await daldalAxios.post(
@@ -470,6 +479,7 @@ export async function getServerSideProps({
       },
     }
   );
+  console.log("review end");
 
   return {
     props: { reviews: content }, // will be passed to the page component as props
