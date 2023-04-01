@@ -13,7 +13,7 @@ services:
     networks:
       - daldal-net
   web:
-    image: rhlehfndvkd7557/daldal-web:2
+    image: rhlehfndvkd7557/daldal-web:26
     container_name: spring-server
     ports:
       - "12333:12333"

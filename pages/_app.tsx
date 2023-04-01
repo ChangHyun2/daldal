@@ -3,6 +3,8 @@ import {
   useNaverMapContext,
 } from "@/store/context/NaverMap";
 import "@/styles/globals.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
@@ -13,7 +15,7 @@ import { AuthContextProvider } from "@/store/context/AuthContext";
 import Header from "@/components/layout/Header";
 
 if (process.env.NODE_ENV === "development") {
-  require("../mocks");
+  // require("../mocks");
 }
 
 const queryClient = new QueryClient();
@@ -39,13 +41,17 @@ export default function App({
 }
 
 function LoadScript({ children }: { children: React.ReactNode }) {
-  const { setNaverMapEnabled } = useNaverMapContext();
+  const { setNaverMapEnabled, setGeocoderEnabled } = useNaverMapContext();
 
   return (
     <>
       <Script
         onLoad={() => setNaverMapEnabled(true)}
         src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}`}
+      />
+      <Script
+        onLoad={() => setGeocoderEnabled(true)}
+        src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&submodules=geocoder`}
       />
       {children}
     </>

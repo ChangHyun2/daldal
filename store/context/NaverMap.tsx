@@ -9,6 +9,8 @@ import React, {
 export type NaverMapContextType = {
   naverMapEnabled: boolean;
   setNaverMapEnabled: Dispatch<SetStateAction<boolean>>;
+  geocoderEnabled: boolean;
+  setGeocoderEnabled: Dispatch<SetStateAction<boolean>>;
 };
 const NaverMapContext = createContext<NaverMapContextType | undefined>(
   undefined
@@ -20,12 +22,15 @@ export const NaverMapContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [naverMapEnabled, setNaverMapEnabled] = useState(false);
+  const [geocoderEnabled, setGeocoderEnabled] = useState(false);
 
   return (
     <NaverMapContext.Provider
       value={{
         naverMapEnabled,
         setNaverMapEnabled,
+        geocoderEnabled,
+        setGeocoderEnabled,
       }}
     >
       {children}

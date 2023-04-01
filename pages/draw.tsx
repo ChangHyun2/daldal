@@ -3,12 +3,12 @@ import { KeyboardEventHandler, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import s from "csd";
 
-import { Button, Modal } from "@mui/material";
+import { Button, IconButton, Modal } from "@mui/material";
 import Image from "next/image";
 import Toolbar from "@/components/map/Toolbar";
 import Search from "@/components/map/Search";
 import Script from "next/script";
-import { isFunctionDeclaration } from "typescript";
+import { isFunctionDeclaration, isTemplateSpan } from "typescript";
 import {
   EmojiFoodBeverage,
   RefreshOutlined,
@@ -17,30 +17,64 @@ import {
 } from "@mui/icons-material";
 import Header2 from "@/components/layout/Header2";
 import { useRouter } from "next/router";
+import { PostCourseRequest, postCourse } from "@/data/axios/course";
+import { getEstimate } from "@/utils/getEstimate";
 
 export default function Map() {
   const [showPermissionGuideModal, setShowPermissionGuideModal] =
     useState(false);
-  const { naverMapEnabled } = useNaverMapContext();
-  const [geocoderEnabled, setGeocoderEnabled] = useState(false);
+  const { naverMapEnabled, geocoderEnabled } = useNaverMapContext();
 
   const [map, setMap] = useState<naver.maps.Map>();
   const [path, setPath] = useState<naver.maps.LatLng[]>([]);
   const router = useRouter();
+  const [startAddress, setStartAddress] = useState<string | null>(null);
+  const [endAddress, setEndAddress] = useState<string | null>(null);
 
-  const getDistance = (path: naver.maps.LatLng[]) => {
-    console.log({ map, path });
-    if (!map) return 0;
+  const getAddressFromPoint = (point: naver.maps.LatLng) =>
+    new Promise<string>((res, rej) => {
+      naver.maps.Service.reverseGeocode(
+        { coords: point },
+        (status, response) => {
+          if (status === 200) {
+            if (response) {
+              const {
+                v2: {
+                  results: [result],
+                },
+              } = response;
 
-    return path.length < 2
-      ? 0
-      : path.slice(0, -1).reduce((acc, p, i) => {
-          const current = p;
-          const next = path[i + 1];
+              if (result) {
+                const { area2, area3, area4 } = result.region;
+                res(
+                  [area2.name, area3.name, area4.name].filter(Boolean).join(" ")
+                );
+              }
+            }
+          }
+          rej("failed");
+        }
+      );
+    });
 
-          return acc + map.getProjection().getDistance(current, next);
-        }, 0);
-  };
+  useEffect(() => {
+    (async () => {
+      try {
+        const startPoint = path[0];
+        const endPoint = path.length > 1 ? path[path.length - 1] : null;
+        if (startPoint) {
+          const startAddress = await getAddressFromPoint(startPoint);
+          setStartAddress(startAddress);
+        }
+        if (endPoint) {
+          const endAddress = await getAddressFromPoint(endPoint);
+          setEndAddress(endAddress);
+        }
+      } catch (e) {
+        window.alert("naver reverse geocode failed");
+      }
+    })();
+  }, [path]);
 
   // init naver map
   useEffect(() => {
@@ -83,51 +117,114 @@ export default function Map() {
   }, [map]);
 
   const submit = async () => {
-    console.log(geocoderEnabled);
     if (!geocoderEnabled) return;
 
-    const firstPoint = path[0];
-    const lastPoint = path[path.length - 1];
+    try {
+      const firstPoint = path[0];
+      const lastPoint = path[path.length - 1];
 
-    const getLocationByLatLng = (latlng: naver.maps.LatLng) =>
-      new Promise<naver.maps.Service.ReverseGeocodeResponse | null>((res) =>
-        naver.maps.Service.reverseGeocode(
-          { coords: latlng, orders: naver.maps.Service.OrderType.ROAD_ADDR },
-          (status, response) => {
-            if (status === 200) {
-              console.log({ response });
-              res(response);
-            } else {
-              res(null);
-            }
-          }
-        )
+      console.log({ lastPoint, firstPoint });
+      const getAddressByLatLng = (latlng: naver.maps.LatLng) =>
+        new Promise<naver.maps.Service.ReverseGeocodeResponse | null>(
+          (res, rej) =>
+            naver.maps.Service.reverseGeocode(
+              {
+                coords: latlng,
+                orders: naver.maps.Service.OrderType.ROAD_ADDR,
+              },
+              (status, response) => {
+                if (status === 200) {
+                  res(response);
+                  return;
+                } else {
+                  res(null);
+                }
+
+                rej("failed");
+              }
+            )
+        );
+      const firstPointAddress = await getAddressByLatLng(firstPoint);
+      const lastPointAddress = await getAddressByLatLng(lastPoint);
+
+      if (firstPointAddress === null || lastPointAddress === null) {
+        throw new Error();
+      }
+
+      const coursePoints: PostCourseRequest["points"] = path.map((point, i) =>
+        i === 0
+          ? { ...point, reverseGeocodeResponse: firstPointAddress }
+          : i === path.length - 1
+          ? { ...point, reverseGeocodeResponse: lastPointAddress }
+          : point
       );
-    const firstPointLocation = await getLocationByLatLng(firstPoint);
-    const lastPointLocation = await getLocationByLatLng(lastPoint);
 
-    if (firstPointLocation === null || lastPointLocation === null) {
-      return window.alert("다시 시도해주세요.");
+      const resultFallback = {
+        region: {
+          area3: { name: "" },
+          area4: { name: "" },
+        },
+      };
+
+      const startResult = firstPointAddress.v2.results[0] || resultFallback;
+      const endResult = lastPointAddress.v2.results[0] || resultFallback;
+
+      const startRegion = startResult.region;
+      const endRegion = endResult.region;
+
+      const s3 = startRegion.area3.name;
+      const s4 = startRegion.area4.name;
+      const e3 = endRegion.area3.name;
+      const e4 = endRegion.area4.name;
+
+      const sname = s3 ? s3 + (s4 ? " " + s4 : "") : "";
+      const ename = e3 ? e3 + (e4 ? " " + e4 : "") : "";
+      console.log({ s3, s4, e3, e4, sname, ename });
+      const filteredName = [sname, ename].filter(Boolean);
+      const postCourseRequest: PostCourseRequest = {
+        name:
+          filteredName.length === 1
+            ? filteredName[0]
+            : filteredName.length === 2
+            ? filteredName.join("-")
+            : "",
+        duration: 0,
+        distance: getDistance(path),
+        points: coursePoints,
+      };
+
+      const { data, status } = await postCourse(postCourseRequest);
+      // const status = 200;
+
+      if (status === 200) {
+        console.log(data);
+        router.push(`/reviews/create/${data.id}`);
+      } else {
+        window.alert(status);
+      }
+    } catch (e) {
+      window.alert("다시 시도해주세요.");
     }
-
-    const request = path.map((point, i) =>
-      i === 0
-        ? { ...point, reverseGeocodeResponse: firstPointLocation }
-        : i === path.length - 1
-        ? { ...point, reverseGeocodeResponse: lastPointLocation }
-        : point
-    );
-
-    const created = { id: "1" };
-    router.push(`/courses/review/${created.id}`);
   };
+
+  const getDistance = (path: naver.maps.LatLng[]) => {
+    if (!map) return 0;
+
+    return path.length < 2
+      ? 0
+      : path.slice(0, -1).reduce((acc, p, i) => {
+          const current = p;
+          const next = path[i + 1];
+
+          return acc + map.getProjection().getDistance(current, next);
+        }, 0);
+  };
+
+  const distance = getDistance(path); // m
+  const estimate = getEstimate(distance); // km/h
 
   return (
     <>
-      <Script
-        onLoad={() => setGeocoderEnabled(true)}
-        src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}&submodules=geocoder`}
-      />
       <Header2 />
       <StyledDraw>
         <div id="map" style={{ height: "100vh" }}>
@@ -144,29 +241,35 @@ export default function Map() {
               <ul>
                 <li>
                   <div className="label">시작</div>
-                  <div className="value">6.8km</div>
+                  <div className="value">{startAddress || ""}</div>
                 </li>
                 <div className="divider"></div>
                 <li>
                   <div className="label">종료</div>
-                  <div className="value">6.8km</div>
+                  <div className="value">{endAddress || ""}</div>
                 </li>
               </ul>
-              <RefreshOutlined />
+              <button
+                className="refresh-btn"
+                onClick={() => setPath((path) => [...path].reverse())}
+              >
+                <RefreshOutlined />
+              </button>
             </div>
           </li>
           <li>
             <div className="card">
               <div className="label">이동 거리</div>
-              <div className="value">
-                {(getDistance(path) / 1000).toFixed(1)}km
-              </div>
+              <div className="value">{(distance / 1000).toFixed(1)}km</div>
             </div>
           </li>
           <li>
             <div className="card">
               <div className="label"> 예상 시간</div>
-              <div className="value">10:50:20</div>
+              <div className="value">
+                {estimate.hour ? estimate.hour + "시 " : ""}
+                {estimate.minute ? estimate.minute + "분" : ""}
+              </div>
             </div>
           </li>
         </ul>
@@ -234,7 +337,7 @@ const StyledDraw = styled.div`
 
       .card-time {
         ${s.row}
-        width: 286px;
+        width: 400px;
 
         ul {
           flex: 1;
@@ -257,9 +360,22 @@ const StyledDraw = styled.div`
           }
         }
 
+        .refresh-btn {
+          border: none;
+          ${s.rowCenter}
+          margin-left: 16px;
+          cursor: pointer;
+          padding: 4px;
+          border: 1px solid #9e9e9e;
+          box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.06),
+            2px 2px 10px rgba(0, 0, 0, 0.04);
+          border-radius: 8px;
+          background: #fff;
+          outline: none;
+        }
+
         svg {
           color: #ff4546;
-          margin-left: 16px;
         }
       }
     }

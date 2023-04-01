@@ -2,122 +2,62 @@ import styled from "styled-components";
 import s from "csd";
 import Image from "next/image";
 import Header2 from "@/components/layout/Header2";
+import { useAuthContext } from "@/store/context/AuthContext";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getCourses } from "@/data/axios/course";
+import { Course } from "@/data/backend/course";
+import { getEstimate } from "@/utils/getEstimate";
+import NaverMap from "@/components/map/naverMap";
+import { useRouter } from "next/router";
+import { bookmarkDown } from "@/data/axios/bookmark";
+import { Review, getMyReview, getReview } from "@/data/axios/review";
 
 export default function Courses() {
+  const { user } = useAuthContext();
+
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    getCourses().then(({ data }) => setCourses(data));
+    getMyReview().then(({ data }) => setReviews(data));
+  }, [user]);
+
+  if (!user) return;
+
   return (
     <StyledCourses>
       <Header2 />
-      <h2>달달님, 49km를 뛰셨어요!</h2>
+      <h2>
+        <b>달달</b>님, <b>49km</b>를 뛰셨네요!
+      </h2>
       <div className="courses">
-        <h3>안 뛴 코스</h3>
+        <h3>저장 된 코스</h3>
         <StyledCards>
-          {Array(3)
-            .fill(0)
-            .map((_) => ({
-              createdAt: "2023-03-25",
-              time: "50:20",
-              distance: "6.8km",
-              name: "잠실석촌호수-한강",
-            }))
-            .map(({ createdAt, time, distance, name }, i) => (
-              <li key={i}>
-                <div className={`card card${i % 3}`}>
-                  <div className="path">path</div>
-                  <div className="createdAt">{createdAt}</div>
-                  <div className="card-bottom">
-                    <div className="name">
-                      <span>
-                        <Image
-                          width={24}
-                          height={24}
-                          src="/icons/pin_drop.svg"
-                          alt="clock"
-                        />
-                      </span>
-                      <span>{name}</span>
-                    </div>
-                    <div className="badges">
-                      <div className="badge">
-                        <span>
-                          <Image
-                            width={24}
-                            height={24}
-                            src="/icons/Access_time.svg"
-                            alt="clock"
-                          />
-                        </span>
-                        <span>{time}</span>
-                      </div>
-                      <div className="badge">
-                        <span>
-                          <Image
-                            width={24}
-                            height={24}
-                            src="/icons/timeline.svg"
-                            alt="clock"
-                          />
-                        </span>
-                        <span>{distance}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
+          {courses.slice(0, 3).map((course) => (
+            <li key={course.id}>
+              <CourseCard
+                course={course}
+                href={`/reviews/create/${course.id}`}
+                readOnly
+              />
+            </li>
+          ))}
         </StyledCards>
       </div>
+      <div className="divider"></div>
       <div className="courses">
-        <h3>뛴 코스</h3>
+        <h3>게시한 리뷰</h3>
         <StyledCards>
-          {Array(3)
-            .fill(0)
-            .map((_) => ({
-              createdAt: "2023-03-25",
-              time: "50:20",
-              distance: "6.8km",
-              name: "잠실석촌호수-한강",
-            }))
-            .map(({ createdAt, time, distance, name }, i) => (
-              <li key={i}>
-                <div className={`card card${i % 3}`}>
-                  <div className="path">path</div>
-                  <div className="createdAt">{createdAt}</div>
-                  <div className="card-bottom">
-                    <div className="name">
-                      <span>
-                        <Image
-                          width={24}
-                          height={24}
-                          src="/icons/pin_drop.svg"
-                          alt="clock"
-                        />
-                      </span>
-                      <span>{name}</span>
-                    </div>
-                    <div className="badges">
-                      <div className="badge">
-                        <Image
-                          width={24}
-                          height={24}
-                          src="/icons/Access_time.svg"
-                          alt="clock"
-                        />
-                        <span>{time}</span>
-                      </div>
-                      <div className="badge">
-                        <Image
-                          width={24}
-                          height={24}
-                          src="/icons/timeline.svg"
-                          alt="clock"
-                        />
-                        <span>{distance}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
+          {reviews.map((review) => (
+            <li key={review.id}>
+              <ReviewCard review={review} href={`/reviews/${review.id}`} />
+            </li>
+          ))}
         </StyledCards>
       </div>
     </StyledCourses>
@@ -128,92 +68,352 @@ const StyledCourses = styled.div`
   padding: 52px 80px;
 
   h2 {
+    display: span;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 26px;
+    background: #fafafa;
+    border-radius: 50px;
     margin-top: 80px;
+    color: #222222;
     ${s.mb5}
+    padding: 16px 32px;
+    margin-bottom: 16px;
   }
 
   h3 {
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
     ${s.mb3}
     color: #FF4546;
+  }
+
+  .divider {
+    margin: 20px 0;
+    border-bottom: 1px solid #eee;
   }
 `;
 
 const StyledCards = styled.ul`
-  ${s.row}
+  ${s.row};
+  flex-wrap: wrap;
   margin: 0 -8px;
-  ${s.mb5}
 
   li {
     ${s.grid4};
     padding: 0 8px;
+  }
+`;
 
-    .card {
-      padding: 24px;
-      height: 272px;
-      position: relative;
-      ${s.col};
-      justify-content: space-between;
-      background: #fff0f0;
-      border-radius: 8px;
+export function CourseCard({
+  course,
+  href,
+}: {
+  course: Course;
+  readOnly?: boolean;
+  href: string;
+}) {
+  const estimate = getEstimate(course.distance);
+  const { points } = course;
 
-      &1 {
-        background: #e9eafc;
-      }
-      &2 {
-        background: #def0fa;
-      }
+  return (
+    <Link href={href}>
+      <StyledCourseCrad>
+        <div className="card">
+          <NaverMap coursePoints={points} disabled />
 
-      .path {
-        position: absolute;
-        width: 140px;
-        height: 140px;
-        background: rgba(255, 255, 255, 0.6);
-      }
+          <div className="body">
+            <div className="head">
+              <div className="address">
+                <img src="/icons/pin_drop.svg" />
+                <div>{course.name}</div>
+              </div>
+            </div>
+            <div className="foot">
+              <div className="estimate">
+                <div>
+                  <img src="/icons/Timeline.svg" />
+                  <div>{(course.distance / 1000).toFixed(1)}Km</div>
+                </div>
+                <div>
+                  <img src="/icons/Access_time.svg" />
+                  <div>
+                    {estimate.hour ? estimate.hour + "시 " : ""}
+                    {estimate.minute ? estimate.minute + "분" : ""}
+                  </div>
+                </div>
+              </div>
+              <button className="review-btn">
+                <span>
+                  <img src="/icons/Edit.svg" width={24} height={24} />
+                </span>
+                <span>평가하기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </StyledCourseCrad>
+    </Link>
+  );
+}
 
-      .createdAt {
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-        align-self: flex-end;
-        color: #9e9e9e;
-      }
+const StyledCourseCrad = styled.div`
+  .card {
+    cursor: pointer;
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.06),
+      2px 2px 10px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.3s;
 
-      .card-bottom {
+    :hover {
+      transform: scale(1.05);
+    }
+
+    .map {
+      height: 244px;
+    }
+    .img {
+    }
+
+    .body {
+      padding: 16px 16px 26px 16px;
+
+      .head {
         ${s.rowSpaceBetween}
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-        align-items: flex-end;
+        ${s.mb3}
 
-        .name {
-          ${s.flex}
+          .address {
+          ${s.row}
           img {
             margin-right: 8px;
           }
         }
 
-        .badges {
-          ${s.col}
+        .bookmark {
+          ${s.rowCenter}
+          img {
+            cursor: pointer;
+            margin-right: 8px;
+          }
+        }
+      }
 
-          .badge {
+      .foot {
+        position: relative;
+
+        .estimate {
+          > div {
             ${s.row}
-            padding: 4px 10px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 8px;
-
-            span {
-              display: flex;
-            }
 
             img {
-              margin-right: 10px;
+              width: 24px;
+              height: 24px;
+              margin-right: 16px;
+            }
+
+            div {
             }
           }
-          .badge:not(:last-of-type) {
-            margin-bottom: 8px;
+        }
+
+        .features {
+          position: absolute;
+          ${s.row}
+          right: 0;
+          bottom: 26px;
+
+          li {
+            width: 20%;
+
+            img {
+              width: 24px;
+              height: 24px;
+            }
           }
         }
       }
     }
+  }
+
+  .review-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    ${s.row}
+    padding: 16px 32px;
+    border: 1px solid #ff4546;
+    border-radius: 8px;
+    background: none;
+    color: red;
+    cursor: pointer;
+
+    :hover {
+      background: #fff5f5;
+    }
+  }
+`;
+
+export function ReviewCard({
+  review,
+  readOnly = false,
+  href,
+}: {
+  review: any;
+  readOnly?: boolean;
+  href: string;
+}) {
+  const [isBookmarked, setIsBookmarked] = useState(review.isBookmarked);
+  const r = review;
+  const router = useRouter();
+
+  const courseName = r.course.name;
+  const estimate = getEstimate(r.course.distance);
+  const { points } = r.course;
+
+  return (
+    <Link href={href}>
+      <StyledReviewCrad>
+        <div className="card">
+          <img className="img" src={review.imageUrl} />
+          <div className="body">
+            <div className="head">
+              <div className="address">
+                <img src="/icons/pin_drop.svg" />
+                <div>{courseName}</div>
+              </div>
+              <div className="favourite">
+                <img src={"/icons/favorite_filled.svg"} />
+                <span>{review.favourite}</span>
+              </div>
+            </div>
+            <div className="foot">
+              <div className="estimate">
+                <div>
+                  <img src="/icons/Timeline.svg" />
+                  <div>{(r.course.distance / 1000).toFixed(1)}Km</div>
+                </div>
+                <div>
+                  <img src="/icons/Access_time.svg" />
+                  <div>
+                    {estimate.hour ? estimate.hour + "시 " : ""}
+                    {estimate.minute ? estimate.minute + "분" : ""}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </StyledReviewCrad>
+    </Link>
+  );
+}
+
+const StyledReviewCrad = styled.div`
+  .card {
+    .img {
+      width: 100%;
+      height: 248px;
+    }
+    transition: transform 0.3s;
+
+    :hover {
+      transform: scale(1.05);
+    }
+
+    cursor: pointer;
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.06),
+      2px 2px 10px rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    margin-bottom: 58px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+
+    .map {
+      height: 244px;
+    }
+
+    .body {
+      padding: 16px 16px 26px 16px;
+
+      .head {
+        ${s.rowSpaceBetween}
+        ${s.mb3}
+
+        .address {
+          ${s.row}
+          img {
+            margin-right: 8px;
+          }
+        }
+        .favourite {
+          ${s.row}
+          img {
+            margin-right: 4px;
+          }
+          span {
+            margin-top: 4px;
+          }
+        }
+
+        .bookmark {
+          ${s.rowCenter}
+          img {
+            cursor: pointer;
+            margin-right: 8px;
+          }
+        }
+      }
+
+      .foot {
+        position: relative;
+
+        .estimate {
+          > div {
+            ${s.row}
+
+            img {
+              width: 24px;
+              height: 24px;
+              margin-right: 16px;
+            }
+
+            div {
+            }
+          }
+        }
+
+        .features {
+          position: absolute;
+          ${s.row}
+          right: 0;
+          bottom: 26px;
+
+          li {
+            width: 20%;
+
+            img {
+              width: 24px;
+              height: 24px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .review-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    ${s.row}
+    padding: 16px 32px;
+    border: 1px solid #ff4546;
+    border-radius: 8px;
+    background: none;
+    color: red;
+    cursor: pointer;
   }
 `;

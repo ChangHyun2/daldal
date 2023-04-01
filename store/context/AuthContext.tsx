@@ -8,15 +8,11 @@ import React, {
 } from "react";
 
 import { useSession, signIn as NextAuthSignIn } from "next-auth/react";
-
-export type Member = {
-  email: string;
-  gender?: "male" | "female";
-  id: string;
-  loginType: "GOOGLE" | "NAVER" | "GITHUB";
-  nickname?: string;
-  username?: string;
-};
+import { Member } from "@/data/backend/member";
+import axios from "axios";
+import { daldalAxios, setAccessToken } from "@/axios/axios";
+import { LoginType, login } from "@/data/axios/login";
+import { setToken } from "@/data/axios/instance";
 
 type Provider = "google" | "naver" | "github";
 type AuthContextType = {
@@ -46,38 +42,42 @@ export const AuthContextProvider = ({
   };
 
   useEffect(() => {
+    const token = window.localStorage.getItem("token") as string | null;
+    const user = window.localStorage.getItem("user");
+
+    if (token && user) {
+      console.log({ token, user });
+      setToken(token);
+      setUser(JSON.parse(user));
+      return;
+    }
+
     if (!session.data?.user) return;
 
     const { provider } = session.data as typeof session.data & {
-      provider: Provider;
+      provider: LoginType;
     };
     const { email } = session.data.user;
 
     if (!provider) return;
+    if (!email) return;
 
-    fetch(
-      `${
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:12333"
-          : "https://daldal.k-net.kr"
-      }/api/v1/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          loginType: provider.toUpperCase(),
-          email,
-        }),
-      }
-    ).then(async (res) => {
+    login({
+      loginType: provider.toUpperCase() as LoginType,
+      email,
+    }).then(async ({ data }) => {
+      if (!data) window.alert("로그인 실패");
+
       const {
         member,
         token: { accessToken },
-      } = await res.json();
+      } = data;
 
+      window.localStorage.setItem("token", accessToken);
+      window.localStorage.setItem("user", JSON.stringify(member));
+      setToken(accessToken);
       setUser(member);
+
       console.log("set axios accessToken", accessToken);
     });
   }, [session]);

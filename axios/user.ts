@@ -1,4 +1,4 @@
-import { User } from "@/data/backend/user";
+import { User } from "@/data/backend/member";
 import axios from "axios";
 
 // GET

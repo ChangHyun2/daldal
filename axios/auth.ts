@@ -1,16 +1,16 @@
 import { Token } from "@/data/backend/token";
-import { User } from "@/data/backend/user";
+import { Member } from "@/data/backend/member";
 import { daldalAxios } from "./axios";
 
 // REGISTER
-export type RegisterRequest = Pick<User, "username"> & { password: string };
+export type RegisterRequest = Pick<Member, "username"> & { password: string };
 export const register = (registerRequest: RegisterRequest) =>
   daldalAxios.post(`/resgiter`, registerRequest);
 
 // SIGNIN
 export type SignInRequest = RegisterRequest;
 export type SignInResponse = {
-  user: User;
+  user: Member;
 } & Token;
 export const signIn = (signInRequest: SignInRequest) =>
   daldalAxios.post<SignInResponse>("/signin", signInRequest);

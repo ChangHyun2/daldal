@@ -2,9 +2,10 @@ import styled from "styled-components";
 import s from "csd";
 import Header2 from "@/components/layout/Header2";
 import { useNaverMapContext } from "@/store/context/NaverMap";
-import { useEffect } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { File } from "buffer";
 
 export default function CourseReview() {
   const { naverMapEnabled } = useNaverMapContext();
@@ -27,8 +28,12 @@ export default function CourseReview() {
     });
   }, [naverMapEnabled]);
 
+  const handleSubmit: FormEventHandler = (e) => {
+    console.log(e.target);
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <StyledHeader />
       <StyledCourseDetail>
         <div className="location-image">
@@ -82,7 +87,7 @@ export default function CourseReview() {
           </div>
         </div>
       </StyledCourseDetail>
-    </>
+    </form>
   );
 }
 

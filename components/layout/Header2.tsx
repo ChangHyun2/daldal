@@ -26,10 +26,10 @@ export default function Header2({ ...props }) {
             <Link href="/draw">코스 그리기</Link>
           </li>
           <li>
-            <Link href="/courses/me">나의 코스 모아보기</Link>
+            <Link href="/courses">나의 코스 모아보기</Link>
           </li>
           <li>
-            <Link href="/courses">코스 정보 둘러보기</Link>
+            <Link href="/reviews">코스 정보 둘러보기</Link>
           </li>
         </ul>
       </nav>
@@ -47,7 +47,7 @@ export default function Header2({ ...props }) {
               setUser(null);
             }}
           >
-            adf
+            로그아웃
           </button>
         </div>
       ) : (
