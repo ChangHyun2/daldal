@@ -109,9 +109,7 @@ export default function Map() {
           const location = new naver.maps.LatLng(latitude, longitude);
           map.setCenter(location);
         },
-        (error) => {
-          console.log(error);
-        }
+        (error) => {}
       );
     }
   }, [map]);
@@ -123,7 +121,6 @@ export default function Map() {
       const firstPoint = path[0];
       const lastPoint = path[path.length - 1];
 
-      console.log({ lastPoint, firstPoint });
       const getAddressByLatLng = (latlng: naver.maps.LatLng) =>
         new Promise<naver.maps.Service.ReverseGeocodeResponse | null>(
           (res, rej) =>
@@ -179,7 +176,7 @@ export default function Map() {
 
       const sname = s3 ? s3 + (s4 ? " " + s4 : "") : "";
       const ename = e3 ? e3 + (e4 ? " " + e4 : "") : "";
-      console.log({ s3, s4, e3, e4, sname, ename });
+
       const filteredName = [sname, ename].filter(Boolean);
       const postCourseRequest: PostCourseRequest = {
         name:
@@ -197,7 +194,6 @@ export default function Map() {
       // const status = 200;
 
       if (status === 200) {
-        console.log(data);
         router.push(`/reviews/create/${data.id}`);
       } else {
         window.alert(status);

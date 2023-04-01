@@ -73,7 +73,6 @@ export default function CourseDetail() {
   }, [naverMapEnabled, course]);
 
   useEffect(() => {
-    console.log(user);
     if (!user) return;
     (async () => {
       try {
@@ -117,8 +116,6 @@ export default function CourseDetail() {
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
     try {
-      console.log({ file, content, features });
-
       if (file && content && features) {
         const form = new FormData();
         form.append(

@@ -459,7 +459,6 @@ export async function getServerSideProps() {
     }
   );
 
-  console.log(content);
   return {
     props: { reviews: content }, // will be passed to the page component as props
   };

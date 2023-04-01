@@ -44,7 +44,7 @@ export default function Toolbar({
         "click",
         (e) => {
           const point = e.latlng as naver.maps.LatLng;
-          console.log(point);
+
           if (status === "drawing") {
             setPath((prev) => [...prev, point]);
           }

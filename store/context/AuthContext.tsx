@@ -53,7 +53,7 @@ export const AuthContextProvider = ({
       const isExpired = exp * 1000 < current;
       if (!isExpired) {
         setToken(token);
-        console.log({ user }, "login from localstorage");
+
         setUser(JSON.parse(user));
         return;
       }
@@ -86,8 +86,6 @@ export const AuthContextProvider = ({
       window.localStorage.setItem("user", JSON.stringify(member));
       setToken(accessToken);
       setUser(member);
-
-      console.log("set axios accessToken", accessToken);
     });
   }, [session]);
 

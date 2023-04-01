@@ -24,10 +24,7 @@ export default function Search({
       }
 
       timer = setTimeout(() => {
-        console.log("call naver map");
-
         naver.maps.Service.geocode({ query: keyword }, (status, response) => {
-          console.log(status);
           if (status === 200) {
             if (response.v2.addresses.length === 0) return;
 

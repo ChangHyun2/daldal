@@ -12,7 +12,6 @@ export default function CourseReview() {
 
   const router = useRouter();
   const { id } = router.query;
-  console.log({ id });
 
   // init naver map
   useEffect(() => {
@@ -28,9 +27,7 @@ export default function CourseReview() {
     });
   }, [naverMapEnabled]);
 
-  const handleSubmit: FormEventHandler = (e) => {
-    console.log(e.target);
-  };
+  const handleSubmit: FormEventHandler = (e) => {};
 
   return (
     <form onSubmit={handleSubmit}>

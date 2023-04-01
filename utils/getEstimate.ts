@@ -20,8 +20,6 @@ export const getEstimate = (distance: number) => {
 
   // km/h
 
-  console.log({ distance, speed });
-
   const hours = distance / speed;
 
   if (hours < 1) {
