@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import jwt_decode from "jwt-decode";
 
 import { useSession, signIn as NextAuthSignIn } from "next-auth/react";
 import { Member } from "@/data/backend/member";
@@ -13,6 +14,7 @@ import axios from "axios";
 import { daldalAxios, setAccessToken } from "@/axios/axios";
 import { LoginType, login } from "@/data/axios/login";
 import { setToken } from "@/data/axios/instance";
+import { Router } from "@mui/icons-material";
 
 type Provider = "google" | "naver" | "github";
 type AuthContextType = {
@@ -46,10 +48,15 @@ export const AuthContextProvider = ({
     const user = window.localStorage.getItem("user");
 
     if (token && user) {
-      console.log({ token, user });
-      setToken(token);
-      setUser(JSON.parse(user));
-      return;
+      const { exp } = jwt_decode(token) as { exp: number };
+      const current = new Date().getTime();
+      const isExpired = exp * 1000 < current;
+      if (!isExpired) {
+        setToken(token);
+        console.log({ user }, "login from localstorage");
+        setUser(JSON.parse(user));
+        return;
+      }
     }
 
     if (!session.data?.user) return;
@@ -66,7 +73,9 @@ export const AuthContextProvider = ({
       loginType: provider.toUpperCase() as LoginType,
       email,
     }).then(async ({ data }) => {
-      if (!data) window.alert("로그인 실패");
+      if (!data) {
+        window.alert("로그인 실패");
+      }
 
       const {
         member,

@@ -33,7 +33,9 @@ export default function Courses() {
     <StyledCourses>
       <Header2 />
       <h2>
-        <b>달달</b>님, <b>49km</b>를 뛰셨네요!
+        <span>
+          🔥 <b>달달</b>님, <b>49km</b>를 뛰셨네요!
+        </span>
       </h2>
       <div className="courses">
         <h3>저장 된 코스</h3>
@@ -68,17 +70,19 @@ const StyledCourses = styled.div`
   padding: 52px 80px;
 
   h2 {
-    display: span;
     font-weight: 400;
     font-size: 20px;
     line-height: 26px;
-    background: #fafafa;
-    border-radius: 50px;
     margin-top: 80px;
-    color: #222222;
     ${s.mb5}
-    padding: 16px 32px;
     margin-bottom: 16px;
+
+    span {
+      background: #fafafa;
+      border-radius: 50px;
+      padding: 16px 32px;
+      color: #222222;
+    }
   }
 
   h3 {

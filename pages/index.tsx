@@ -13,20 +13,13 @@ import { bookmarkDown, bookmarkUp } from "@/data/axios/bookmark";
 import { useRouter } from "next/router";
 import { r } from "msw/lib/glossary-de6278a9";
 import { favouriteDown, favouriteUp } from "@/data/axios/favourite";
+import { signIn } from "next-auth/react";
+import { login } from "@/data/axios/login";
+import axios from "axios";
+import qs from "qs";
 
-export default function Home() {
+export default function Home({ reviews }: { reviews: Review[] }) {
   const { user } = useAuthContext();
-  const [reviews, setReviews] = useState<Review[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      try {
-        getReviewPopular().then(({ data }) => setReviews(data));
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  }, [user]);
 
   return (
     <StyledHome>
@@ -65,7 +58,7 @@ export default function Home() {
             </strong>
           </span>
         </h1>
-        <Reviews reviews={reviews} />
+        {reviews && <Reviews reviews={reviews} />}
       </StyledMain>
     </StyledHome>
   );
@@ -151,7 +144,7 @@ function ReviewItem({ review }: { review: Review }) {
     review.isBookmarked
   );
 
-  console.log(review);
+  const { user } = useAuthContext();
 
   const [isFavourite, setIsFavorite] = useState<boolean>(review.isFavorite);
   const router = useRouter();
@@ -211,42 +204,44 @@ function ReviewItem({ review }: { review: Review }) {
             </li>
           ))}
         </ul>
-        <StyledActions>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsFavorite((prev) => !prev);
-              isFavourite ? favouriteDown(review.id) : favouriteUp(review.id);
-            }}
-          >
-            <span>
-              <img
-                src={`/icons/${
-                  isFavourite ? "favorite_filled" : "favorite_outline"
-                }.svg`}
-              />
-            </span>
-            <span>{favoriteOthers + (isFavourite ? 1 : 0)}</span>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsBookmarked((prev) => !prev);
-              isBookmarked
-                ? bookmarkUp(review.course.id)
-                : bookmarkDown(review.course.id);
-            }}
-          >
-            <span>
-              <img
-                src={`/icons/Bookmark_${
-                  isBookmarked ? "filled" : "outline"
-                }.svg`}
-              />
-            </span>
-            <span>{bookmarkOthers + (isBookmarked ? 1 : 0)}</span>
-          </button>
-        </StyledActions>
+        {user && (
+          <StyledActions>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFavorite((prev) => !prev);
+                isFavourite ? favouriteDown(review.id) : favouriteUp(review.id);
+              }}
+            >
+              <span>
+                <img
+                  src={`/icons/${
+                    isFavourite ? "favorite_filled" : "favorite_outline"
+                  }.svg`}
+                />
+              </span>
+              <span>{favoriteOthers + (isFavourite ? 1 : 0)}</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsBookmarked((prev) => !prev);
+                isBookmarked
+                  ? bookmarkUp(review.course.id)
+                  : bookmarkDown(review.course.id);
+              }}
+            >
+              <span>
+                <img
+                  src={`/icons/Bookmark_${
+                    isBookmarked ? "filled" : "outline"
+                  }.svg`}
+                />
+              </span>
+              <span>{bookmarkOthers + (isBookmarked ? 1 : 0)}</span>
+            </button>
+          </StyledActions>
+        )}
       </div>
     </li>
   );
@@ -421,3 +416,51 @@ const StyledActions = styled.div`
     }
   }
 `;
+
+export async function getServerSideProps() {
+  const daldalAxios = axios.create({
+    baseURL:
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:12333/api/v1"
+        : "https://daldal.k-net.kr/",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    paramsSerializer: {
+      serialize: (params) => qs.stringify(params),
+    },
+  });
+
+  const setToken = (token: string | null) => {
+    daldalAxios.defaults.headers["Authorization"] = token
+      ? `Bearer ${token}`
+      : null;
+  };
+
+  const { data } = await login({
+    email: "jchangh2@gmail.com",
+    loginType: "GOOGLE",
+  });
+
+  if (!data) return { reviews: [] };
+  const { token } = data;
+  setToken(token.accessToken);
+
+  const {
+    data: { content },
+  } = await daldalAxios.post(
+    "/review/filter",
+    { features: [] },
+    {
+      params: {
+        page: 0,
+        size: 100,
+      },
+    }
+  );
+
+  console.log(content);
+  return {
+    props: { reviews: content }, // will be passed to the page component as props
+  };
+}

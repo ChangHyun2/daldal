@@ -36,8 +36,6 @@ export default function ReviewDetail() {
 
   const isMyReview = review?.member.email === user?.email;
 
-  console.log(commentValue);
-
   return (
     <StyledReviewDetail>
       <Header2 />
@@ -102,7 +100,7 @@ export default function ReviewDetail() {
         <div className="right">
           <NaverMap coursePoints={review.course.points} disabled />
           <h3>댓글</h3>
-          {isMyReview && (
+          {!isMyReview && (
             <div className="comments-create">
               <img src={"/icons/cafe.svg"} />
               <input
@@ -203,10 +201,12 @@ const StyledReviewDetail = styled.div`
         ${s.row}
         margin-bottom:8px;
         ${s.grid6}
+
         img {
           margin-right: 16px;
           width: 40px;
           height: 40px;
+          margin-bottom: 8px;
         }
       }
     }
