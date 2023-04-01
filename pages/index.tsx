@@ -432,10 +432,7 @@ export async function getServerSideProps({
   );
 
   const daldalAxios = axios.create({
-    baseURL:
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:12333/api/v1"
-        : "https://daldal.k-net.kr/api/v1",
+    baseURL: "https://daldal.k-net.kr/api/v1",
     headers: {
       "Content-Type": "application/json",
     },
