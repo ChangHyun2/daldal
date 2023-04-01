@@ -17,6 +17,11 @@ import { signIn } from "next-auth/react";
 import { login } from "@/data/axios/login";
 import axios from "axios";
 import qs from "qs";
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+} from "next";
 
 export default function Home({ reviews }: { reviews: Review[] }) {
   const { user } = useAuthContext();
@@ -417,7 +422,15 @@ const StyledActions = styled.div`
   }
 `;
 
-export async function getStaticProps() {
+export async function getServerSideProps({
+  req,
+  res,
+}: GetServerSidePropsContext) {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=10, stale-while-revalidate=59"
+  );
+
   const daldalAxios = axios.create({
     baseURL:
       process.env.NODE_ENV === "development"
@@ -431,16 +444,18 @@ export async function getStaticProps() {
     },
   });
 
+  const { data } = await daldalAxios.post("/auth/login", {
+    email: "jchangh2@gmail.com",
+    loginType: "GOOGLE",
+  });
+
+  console.log({ data });
+
   const setToken = (token: string | null) => {
     daldalAxios.defaults.headers["Authorization"] = token
       ? `Bearer ${token}`
       : null;
   };
-
-  const { data } = await daldalAxios.post("/login", {
-    email: "jchangh2@gmail.com",
-    loginType: "GOOGLE",
-  });
 
   if (!data) return { reviews: [] };
   const { token } = data;
