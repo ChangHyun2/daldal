@@ -435,7 +435,7 @@ export async function getServerSideProps({
     baseURL:
       process.env.NODE_ENV === "development"
         ? "http://localhost:12333/api/v1"
-        : "https://daldal.k-net.kr/",
+        : "https://daldal.k-net.kr/api/v1",
     headers: {
       "Content-Type": "application/json",
     },
