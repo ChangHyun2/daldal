@@ -417,7 +417,7 @@ const StyledActions = styled.div`
   }
 `;
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const daldalAxios = axios.create({
     baseURL:
       process.env.NODE_ENV === "development"
@@ -437,7 +437,7 @@ export async function getServerSideProps() {
       : null;
   };
 
-  const { data } = await login({
+  const { data } = await daldalAxios.post("/login", {
     email: "jchangh2@gmail.com",
     loginType: "GOOGLE",
   });
