@@ -4,7 +4,9 @@ import qs from "qs";
 
 export const daldalAxios = axios.create({
   baseURL:
-    process.env.NODE_ENV === "development" ? "http:localhost:3000/api" : "",
+    process.env.NODE_ENV === "development"
+      ? "http:localhost:3000/api"
+      : "https://daldal.k-net.kr",
   headers: {
     "Content-Type": "application/json",
   },
