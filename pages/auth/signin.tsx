@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { LoginType } from "@/data/axios/login";
 
 export default function Signin() {
-  const { user, login } = useAuthContext();
+  const { user, login, bsideLogin } = useAuthContext();
   const router = useRouter();
   const session = useSession();
 
@@ -39,6 +39,10 @@ export default function Signin() {
     }
   }, [user]);
 
+  const handleClickBsideLogin = () => {
+    bsideLogin();
+  };
+
   return (
     <StyledSignIn>
       <div className="box">
@@ -47,17 +51,25 @@ export default function Signin() {
         </IconButton>
         <h1>간편 로그인</h1>
         <div className="buttons">
-          <button className="naver" onClick={() => signIn("naver")}>
+          {/* <button
+            className="naver"
+            onClick={() => signIn("naver")}
+            disabled={true}
+          >
             <span>
               <img src="/icons/naver.svg" width={24} height={24} />
             </span>
             <span>네이버로 로그인</span>
-          </button>
+          </button> */}
           <button className="google" onClick={() => signIn("google")}>
             <span>
               <img src="/icons/google.svg" width={24} height={24} />
             </span>
             <span>구글로 로그인</span>
+          </button>
+          <button className="bside" onClick={handleClickBsideLogin}>
+            <div></div>
+            <span>비사이드 전용 간편 로그인</span>
           </button>
         </div>
       </div>
@@ -100,13 +112,18 @@ const StyledSignIn = styled.div`
         cursor: pointer;
         ${s.rowSpaceBetween}
         font-size: 14px;
+        height: 47px;
 
         &.naver {
           ${s.mb1}
           background: #57B04B;
         }
         &.google {
+          ${s.mb1}
           background: #4868ad;
+        }
+        &.bside {
+          background: #ff4938;
         }
       }
     }

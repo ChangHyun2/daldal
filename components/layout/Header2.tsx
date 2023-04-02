@@ -6,7 +6,7 @@ import { useAuthContext } from "@/store/context/AuthContext";
 import { signIn, signOut } from "next-auth/react";
 
 export default function Header2({ ...props }) {
-  const { user, setUser } = useAuthContext();
+  const { user, setUser, logout } = useAuthContext();
 
   return (
     <StyledHeader {...props}>
@@ -37,13 +37,7 @@ export default function Header2({ ...props }) {
           {/* <IconButton style={{ color: "white" }}>
             <ArrowDropDownOutlined />
           </IconButton> */}
-          <button
-            className="auth-btn"
-            onClick={() => {
-              signOut();
-              setUser(null);
-            }}
-          >
+          <button className="auth-btn" onClick={logout}>
             로그아웃
           </button>
         </div>

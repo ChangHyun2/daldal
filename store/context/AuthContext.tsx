@@ -21,6 +21,8 @@ type AuthContextType = {
   oauth: (provider: LoginType) => void;
   logout: () => void;
   login: (loginRequest: LoginRequest) => void;
+  bsideLogin: () => void;
+  autoLogin: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -29,6 +31,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 
 const ACCESS_TOKEN_KEY_DO_DELETE = "delete when fix reissue api";
 const REFRESH_TOKEN_KEY = "asdfasdfadsfasfadsfasfwerq";
+const BSIDE_EMAIL_KEY = "asdfasdfdsafsdafsda";
 
 export const AuthContextProvider = ({
   children,
@@ -46,7 +49,32 @@ export const AuthContextProvider = ({
     setToken(null);
     setUser(null);
     window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+    window.localStorage.removeItem(BSIDE_EMAIL_KEY);
     NextLogout();
+  };
+
+  const bsideLogin = async () => {
+    const oldEmail = window.localStorage.getItem(BSIDE_EMAIL_KEY);
+    const email = oldEmail || window.crypto.randomUUID();
+    window.localStorage.setItem(BSIDE_EMAIL_KEY, email);
+
+    const { data } = await nextLogin({
+      email,
+      loginType: "GOOGLE",
+    });
+
+    if (data) {
+      const {
+        member,
+        token: { accessToken, refreshToken },
+      } = data;
+
+      // window.localStorage.setItem(ACCESS_TOKEN_KEY_DO_DELETE, accessToken);
+      window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+      setToken(accessToken);
+      setUser(member);
+      return;
+    }
   };
 
   const login = async (loginRequest: LoginRequest) => {
@@ -69,45 +97,49 @@ export const AuthContextProvider = ({
   };
 
   const autoLogin = async () => {
-    // const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY_DO_DELETE);
-    const refreshToken = window.localStorage.getItem(REFRESH_TOKEN_KEY);
-    if (refreshToken) {
-      console.log("auto login start");
-      const { exp } = jwt_decode(refreshToken) as { exp: number };
-      const current = new Date().getTime();
-      const isExpired = exp * 1000 < current;
+    const accessToken = window.localStorage.getItem(ACCESS_TOKEN_KEY_DO_DELETE);
 
-      if (!isExpired) {
-        const { data } = await nextReissue({ refreshToken });
-        if (data) {
-          const {
-            token: { accessToken, refreshToken },
-            member,
-          } = data;
-
-          setUser(member);
-          setToken(accessToken);
-          window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-
-          console.log("auto login success");
-        }
-      }
+    const bsideToken = window.localStorage.getItem(BSIDE_EMAIL_KEY);
+    if (bsideToken) {
+      bsideLogin();
+      return;
     }
 
-    // if (accessToken) {
-    //   const { exp } = jwt_decode(accessToken) as { exp: number };
+    // const refreshToken = window.localStorage.getItem(REFRESH_TOKEN_KEY);
+    // if (refreshToken) {
+    //   console.log("auto login start");
+    //   const { exp } = jwt_decode(refreshToken) as { exp: number };
     //   const current = new Date().getTime();
     //   const isExpired = exp * 1000 < current;
 
-    //   console.log(accessToken);
-    //   if (isExpired) return;
-    //   setToken(accessToken);
-    //   const { data } = await getMemberProfile();
-    //   if (data) setUser(data);
-    //   return;
+    //   if (!isExpired) {
+    //     const { data } = await nextReissue({ refreshToken });
+    //     if (data) {
+    //       const {
+    //         token: { accessToken, refreshToken },
+    //         member,
+    //       } = data;
+
+    //       setUser(member);
+    //       setToken(accessToken);
+    //       window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+
+    //       console.log("auto login success");
+    //     }
+    //   }
     // }
 
-    console.log("auto login failure");
+    if (accessToken) {
+      const { exp } = jwt_decode(accessToken) as { exp: number };
+      const current = new Date().getTime();
+      const isExpired = exp * 1000 < current;
+
+      if (isExpired) return;
+      setToken(accessToken);
+      const { data } = await getMemberProfile();
+      if (data) setUser(data);
+      return;
+    }
   };
 
   // 앱 진입 시 local storage 확인 (자동 로그인)
@@ -116,7 +148,9 @@ export const AuthContextProvider = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, oauth, logout, login }}>
+    <AuthContext.Provider
+      value={{ user, setUser, oauth, logout, login, bsideLogin, autoLogin }}
+    >
       {children}
     </AuthContext.Provider>
   );

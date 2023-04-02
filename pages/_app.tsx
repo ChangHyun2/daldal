@@ -11,7 +11,10 @@ import type { AppProps } from "next/app";
 import Script from "next/script";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { AuthContextProvider } from "@/store/context/AuthContext";
+import {
+  AuthContextProvider,
+  useAuthContext,
+} from "@/store/context/AuthContext";
 import Header from "@/components/layout/Header";
 
 if (process.env.NODE_ENV === "development") {
@@ -42,6 +45,12 @@ export default function App({
 
 function LoadScript({ children }: { children: React.ReactNode }) {
   const { setNaverMapEnabled, setGeocoderEnabled } = useNaverMapContext();
+
+  const { autoLogin } = useAuthContext();
+
+  useEffect(() => {
+    autoLogin();
+  }, []);
 
   return (
     <>
