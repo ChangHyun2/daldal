@@ -39,7 +39,7 @@ export default function App({
             "당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요.",
           images: [
             {
-              url: "https://kr.object.ncloudstorage.com/daldal-bucket/logo/logo.svg",
+              url: "https://kr.object.ncloudstorage.com/daldal-bucket/logo/thumbnail_img_800x600-01.png",
               width: 800,
               height: 600,
               alt: "Og Image Alt",
