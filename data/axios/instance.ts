@@ -20,7 +20,7 @@ export const nextAxios = axios.create({
   baseURL:
     process.env.NODE_ENV === "development"
       ? "http://localhost:3333/api"
-      : "https://daldal.vercel.app/api",
+      : "https://nimble-daldal.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },
