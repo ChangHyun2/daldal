@@ -32,7 +32,10 @@ export default function App({
       <DefaultSeo
         title="Nimble"
         description="당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요."
+        canonical="https://www.nimble-daldal.vercel.app"
         openGraph={{
+          type: "website",
+          locale: "ko_KR",
           url: "https://nimble-daldal.vercel.app",
           title: "Nimble",
           description:
@@ -40,8 +43,8 @@ export default function App({
           images: [
             {
               url: "https://kr.object.ncloudstorage.com/daldal-bucket/logo/thumbnail_img_800x600-01.png",
-              width: 800,
-              height: 600,
+              width: 285,
+              height: 167,
               alt: "Og Image Alt",
               type: "image/svg",
             },
