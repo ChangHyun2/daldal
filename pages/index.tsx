@@ -152,9 +152,12 @@ function ReviewItem({ review }: { review: Review }) {
 
   const { user } = useAuthContext();
 
-  const favoriteOthers = Math.min(review.favourite + (isFavourite ? -1 : 0), 0);
+  const favoriteOthers = Math.min(
+    review.favourite + (review.isBookmarked ? -1 : 0),
+    0
+  );
   const bookmarkOthers = Math.min(
-    review.course.bookamark + (isBookmarked ? -1 : 0),
+    review.course.bookamark + (review.isBookmarked ? -1 : 0),
     0
   );
 
@@ -239,8 +242,8 @@ function ReviewItem({ review }: { review: Review }) {
                 e.stopPropagation();
                 setIsBookmarked((prev) => !prev);
                 isBookmarked
-                  ? bookmarkUp(review.course.id)
-                  : bookmarkDown(review.course.id);
+                  ? bookmarkDown(review.course.id)
+                  : bookmarkUp(review.course.id);
               }}
             >
               <span>

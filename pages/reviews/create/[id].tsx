@@ -119,7 +119,7 @@ export default function CourseDetail() {
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
     try {
-      if (file && content && features) {
+      if (file && content && features.length) {
         const form = new FormData();
         form.append(
           "dto",
@@ -127,7 +127,10 @@ export default function CourseDetail() {
             [
               JSON.stringify({
                 content,
-                features,
+                features: features
+                  .map((checked, i) => ({ name: FEATURES[i].name, checked }))
+                  .filter((f) => f.checked)
+                  .map((f) => f.name),
               }),
             ],
             {

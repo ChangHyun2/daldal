@@ -21,21 +21,35 @@ export default function ReviewDetail() {
   const { user } = useAuthContext();
   const [commentValue, setCommentValue] = useState("");
 
+  const [bookmark, setBookmark] = useState(review?.course.bookamark || 0);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(
-    review?.isBookmarked || false
-  );
-  const [isFavourite, setIsFavorite] = useState<boolean>(
-    review?.isFavorite || false
+    review?.isBookmarked ?? false
   );
 
-  const favoriteOthers = Math.min(
-    (review?.favourite || 0) + (isFavourite ? -1 : 0),
-    0
+  const [favorite, setFavorite] = useState(review?.favourite || 0);
+  const [isFavourite, setIsFavorite] = useState<boolean>(
+    review?.isFavorite ?? false
   );
-  const bookmarkOthers = Math.min(
-    (review?.course?.bookamark || 0) + (isBookmarked ? -1 : 0),
-    0
-  );
+
+  const handleClickBookmarkBtn = (e: any, review: Review) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    setIsBookmarked((prev) => !prev);
+    setBookmark((prev) => prev + (isBookmarked ? -1 : 1));
+
+    isBookmarked
+      ? bookmarkDown(review.course.id)
+      : bookmarkUp(review.course.id);
+  };
+
+  const handleClickFavoriteBtn = (e: any, review: Review) => {
+    e.stopPropagation();
+    setIsFavorite((prev) => !prev);
+    setFavorite((prev) => (isFavourite ? prev - 1 : prev + 1));
+    isFavourite ? favouriteDown(review.id) : favouriteUp(review.id);
+  };
+
   useEffect(() => {
     if (!user) {
       router.push("/");
@@ -47,6 +61,8 @@ export default function ReviewDetail() {
           setReview(data);
           setIsFavorite(data.isFavorite);
           setIsBookmarked(data.isBookmarked);
+          setBookmark(data.course.bookamark);
+          setFavorite(data.favourite);
         } else {
           router.push("/reviews");
         }
@@ -92,9 +108,7 @@ export default function ReviewDetail() {
           <StyledActions>
             <button
               onClick={(e) => {
-                e.stopPropagation();
-                setIsFavorite((prev) => !prev);
-                isFavourite ? favouriteDown(review.id) : favouriteUp(review.id);
+                handleClickFavoriteBtn(e, review);
               }}
             >
               <span>
@@ -105,17 +119,9 @@ export default function ReviewDetail() {
                   alt="userimage"
                 />
               </span>
-              <span>{favoriteOthers + (isFavourite ? 1 : 0)}</span>
+              <span>{favorite}</span>
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsBookmarked((prev) => !prev);
-                isBookmarked
-                  ? bookmarkUp(review.course.id)
-                  : bookmarkDown(review.course.id);
-              }}
-            >
+            <button onClick={(e) => handleClickBookmarkBtn(e, review)}>
               <span>
                 <img
                   src={`/icons/Bookmark_${
@@ -124,7 +130,7 @@ export default function ReviewDetail() {
                   alt="userimage"
                 />
               </span>
-              <span>{bookmarkOthers + (isBookmarked ? 1 : 0)}</span>
+              <span>{bookmark}</span>
             </button>
           </StyledActions>
         )}

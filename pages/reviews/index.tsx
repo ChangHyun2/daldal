@@ -104,9 +104,23 @@ export function ReviewCard({
   readOnly?: boolean;
   href: string;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState<Boolean>(
-    review.isBookmarked
+  const [bookmark, setBookmark] = useState(review?.course.bookamark || 0);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(
+    review?.isBookmarked ?? false
   );
+
+  const handleClickBookmarkBtn = (e: any, review: Review) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    setIsBookmarked((prev) => !prev);
+    setBookmark((prev) => prev + (isBookmarked ? -1 : 1));
+
+    isBookmarked
+      ? bookmarkDown(review.course.id)
+      : bookmarkUp(review.course.id);
+  };
+
   const r = review;
   const router = useRouter();
   const { user } = useAuthContext();
@@ -123,7 +137,6 @@ export function ReviewCard({
   }, [user]);
 
   if (!user) return null;
-
   return (
     <Link href={href}>
       <StyledReviewCrad>
@@ -139,12 +152,7 @@ export function ReviewCard({
                 <div
                   className="bookmark"
                   onClick={(e) => {
-                    e.preventDefault();
-
-                    isBookmarked
-                      ? bookmarkDown(r.course.id)
-                      : bookmarkUp(r.course.id);
-                    setIsBookmarked((prev) => !prev);
+                    handleClickBookmarkBtn(e, r);
                   }}
                 >
                   <img
@@ -153,7 +161,7 @@ export function ReviewCard({
                       isBookmarked ? "filled" : "outline"
                     }.svg`}
                   />
-                  <div>{r.course.bookamark + (isBookmarked ? 1 : 0)}</div>
+                  <div>{bookmark}</div>
                 </div>
               )}
             </div>
@@ -388,9 +396,22 @@ function Slides() {
 const StyledSlide = ({ review }: { review: Review }) => {
   const r = review;
   const router = useRouter();
-  const [isBookmarked, setIsBookmarked] = useState<Boolean>(
-    review.isBookmarked
+
+  const [bookmark, setBookmark] = useState(review?.course.bookamark || 0);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(
+    review?.isBookmarked ?? false
   );
+
+  const handleClickBookmarkBtn = (e: any, review: Review) => {
+    e.stopPropagation();
+
+    setIsBookmarked((prev) => !prev);
+    setBookmark((prev) => prev + (isBookmarked ? -1 : 1));
+
+    isBookmarked
+      ? bookmarkDown(review.course.id)
+      : bookmarkUp(review.course.id);
+  };
 
   return (
     <div className="slide" key={r.id}>
@@ -403,8 +424,11 @@ const StyledSlide = ({ review }: { review: Review }) => {
         <div className="badge">{r.course.name}</div>
         <div className="right">
           <div className="bookmark">
-            <img src={`/icons/bookmark_filled.svg`} alt="userimage" />
-            <div>{r.favourite}</div>
+            <img
+              src={`/icons/Bookmark_${isBookmarked ? "filled" : "outline"}.svg`}
+              alt="userimage"
+            />
+            <div>{bookmark}</div>
           </div>
           <div className="info">
             <div className="estimate">
@@ -454,11 +478,7 @@ const StyledSlide = ({ review }: { review: Review }) => {
             <div className="links">
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setIsBookmarked((prev) => !prev);
-                  isBookmarked
-                    ? bookmarkUp(r.course.id)
-                    : bookmarkDown(r.course.id);
+                  handleClickBookmarkBtn(e, r);
                 }}
               >
                 <span>
