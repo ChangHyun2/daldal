@@ -278,10 +278,12 @@ const StyledReviewCrad = styled.div`
         }
 
         .features {
+          width: 60%;
+
           position: absolute;
           ${s.row}
           right: 0;
-          bottom: 26px;
+          top: 0;
 
           li {
             width: 20%;
