@@ -197,7 +197,7 @@ export function ReviewCard({
                     const feature = FEATURES.find((f) => f.name === fname);
 
                     if (!feature) return null;
-                    console.log(feature);
+
                     return (
                       <li key={i}>
                         <img
@@ -278,20 +278,16 @@ const StyledReviewCrad = styled.div`
         }
 
         .features {
-          width: 60%;
-
           position: absolute;
-          ${s.row}
+          ${s.row};
           right: 0;
           top: 0;
 
           li {
-            width: 20%;
-
-            img {
-              width: 24px;
-              height: 24px;
-            }
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
           }
         }
       }

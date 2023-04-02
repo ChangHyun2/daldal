@@ -168,9 +168,9 @@ export default function ReviewDetail() {
             </ul>
           </div>
           <div className="diary">
-            <h3>한줄 일기</h3>
+            <h3>한 줄 일기</h3>
             <img alt="userimage" src={review.imageUrl} />
-
+            <p>{review.content}</p>
             <div className="sentiment">
               <img
                 className="emoji"
@@ -311,6 +311,8 @@ const StyledReviewDetail = styled.div`
       }
 
       .sentiment {
+        margin-top: 10px;
+        width: fit-content;
         padding: 4px 8px;
         background: #e9eafc;
         border: 1px solid #7884ed;
