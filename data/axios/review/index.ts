@@ -3,8 +3,12 @@ import { daldalAxios } from "../instance";
 import { Course } from "@/data/backend/course";
 import { Comment } from "@/data/backend/comment";
 
-export const SENTIMENTS = ["POSITIVE", "NEUTRAL", "NEGATIVE"] as const;
-export type ReviewSentiment = (typeof SENTIMENTS)[number];
+export const SENTIMENTS = [
+  { name: "POSITIVE", label: "상쾌해요" },
+  { name: "NEUTRAL", label: "그냥그래요" },
+  { name: "NEGATIVE", label: "지쳤어요" },
+] as const;
+export type ReviewSentiment = (typeof SENTIMENTS)[number]["name"];
 
 export const FEATURES = [
   { name: "TOILET", icon: "public_toilet", label: "화장실" },

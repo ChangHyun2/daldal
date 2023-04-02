@@ -82,8 +82,7 @@ const StyledCourses = styled.div`
     font-size: 20px;
     line-height: 26px;
     margin-top: 80px;
-    ${s.mb5}
-    margin-bottom: 16px;
+    ${s.mb3}
 
     span {
       background: #fafafa;

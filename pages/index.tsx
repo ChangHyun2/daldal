@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useNaverMapContext } from "@/store/context/NaverMap";
 import Header2 from "@/components/layout/Header2";
 import { getReviewPopular } from "@/data/axios/review/popular";
-import { FEATURES, Review } from "@/data/axios/review";
+import { FEATURES, Review, SENTIMENTS } from "@/data/axios/review";
 import { userAgent } from "next/server";
 import NaverMap from "@/components/map/naverMap";
 import { bookmarkDown, bookmarkUp } from "@/data/axios/bookmark";
@@ -166,7 +166,7 @@ function ReviewItem({ review }: { review: Review }) {
             width={32}
             height={32}
             className="avatar"
-            src={review.imageUrl}
+            src={review.member.profileImageUrl}
             alt="userimage"
           />
           <div>
@@ -181,8 +181,10 @@ function ReviewItem({ review }: { review: Review }) {
       <div className="diary">
         <p>{review.content}</p>
         <div className="sentiment">
-          <span className="emoji">😎</span>
-          <span>{review.sentiment}</span>
+          <img className="emoji" src={`/icons/emoji/${review.sentiment}.svg`} />
+          <span>
+            {SENTIMENTS.find((s) => s.name === review.sentiment)?.label || ""}
+          </span>
         </div>
       </div>
       <ul className="body">
@@ -205,7 +207,7 @@ function ReviewItem({ review }: { review: Review }) {
               <img
                 width={24}
                 height={24}
-                src={`/icons/${
+                src={`/icons/feature_small_navy/${
                   FEATURES.find((f) => f.name === feature)?.icon
                 }.svg`}
                 alt="acute"
@@ -317,6 +319,7 @@ const StyledReviews = styled.ul`
         color: #9ca5f2;
 
         .emoji {
+          margin-bottom: -2px;
           margin-right: 5px;
         }
       }

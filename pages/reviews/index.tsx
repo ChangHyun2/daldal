@@ -100,11 +100,13 @@ export function ReviewCard({
   readOnly = false,
   href,
 }: {
-  review: any;
+  review: Review;
   readOnly?: boolean;
   href: string;
 }) {
-  const [isBookmarked, setIsBookmarked] = useState(review.isBookmarked);
+  const [isBookmarked, setIsBookmarked] = useState<Boolean>(
+    review.isBookmarked
+  );
   const r = review;
   const router = useRouter();
   const { user } = useAuthContext();
@@ -142,7 +144,7 @@ export function ReviewCard({
                     isBookmarked
                       ? bookmarkDown(r.course.id)
                       : bookmarkUp(r.course.id);
-                    setIsBookmarked((prev: boolean) => !prev);
+                    setIsBookmarked((prev) => !prev);
                   }}
                 >
                   <img
@@ -183,14 +185,20 @@ export function ReviewCard({
                 </button>
               ) : (
                 <ul className="features">
-                  {r.features.map((f: string, i: number) => (
-                    <li key={i}>
-                      <img
-                        alt="userimage"
-                        src={`/icons/feature_large_gray/angle-acute.svg`}
-                      />
-                    </li>
-                  ))}
+                  {r.features.map((fname, i) => {
+                    const feature = FEATURES.find((f) => f.name === fname);
+
+                    if (!feature) return null;
+                    console.log(feature);
+                    return (
+                      <li key={i}>
+                        <img
+                          alt="userimage"
+                          src={`/icons/feature_small_navy/${feature.icon}.svg`}
+                        />
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -377,7 +385,7 @@ function Slides() {
   );
 }
 
-const StyledSlide = ({ review }: { review: any }) => {
+const StyledSlide = ({ review }: { review: Review }) => {
   const r = review;
   const router = useRouter();
   const [isBookmarked, setIsBookmarked] = useState<Boolean>(
@@ -411,18 +419,36 @@ const StyledSlide = ({ review }: { review: any }) => {
             </div>
             <div className="features">
               <ul>
-                {FEATURES.slice(0, 5).map((f) => (
-                  <li key={f.name}>
-                    <img src={`/icons/Timeline.svg`} alt="userimage" />
-                  </li>
-                ))}
+                {review.features.slice(0, 5).map((fname) => {
+                  const feature = FEATURES.find((f) => fname);
+
+                  if (!feature) return null;
+
+                  return (
+                    <li key={fname}>
+                      <img
+                        src={`/icons/feature_small_navy/${feature.icon}.svg`}
+                        alt="userimage"
+                      />
+                    </li>
+                  );
+                })}
               </ul>
               <ul>
-                {FEATURES.slice(5).map((f) => (
-                  <li key={f.name}>
-                    <img src={`/icons/Timeline.svg`} alt="userimage" />
-                  </li>
-                ))}
+                {review.features.slice(5).map((fname) => {
+                  const feature = FEATURES.find((f) => fname);
+
+                  if (!feature) return null;
+
+                  return (
+                    <li key={fname}>
+                      <img
+                        src={`/icons/feature_small_navy/${feature.icon}.svg`}
+                        alt="userimage"
+                      />
+                    </li>
+                  );
+                })}
               </ul>
             </div>
             <div className="links">

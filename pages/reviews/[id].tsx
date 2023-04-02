@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import s from "csd";
-import { FEATURES, Review, getReview } from "@/data/axios/review";
+import { FEATURES, Review, SENTIMENTS, getReview } from "@/data/axios/review";
 import NaverMap from "@/components/map/naverMap";
 import { useAuthContext } from "@/store/context/AuthContext";
 import Header2 from "@/components/layout/Header2";
@@ -39,22 +39,20 @@ export default function ReviewDetail() {
   useEffect(() => {
     if (!user) {
       router.push("/");
+    } else {
+      if (typeof id !== "string") return;
+
+      getReview(id).then(({ data }) => {
+        if (data) {
+          setReview(data);
+          setIsFavorite(data.isFavorite);
+          setIsBookmarked(data.isBookmarked);
+        } else {
+          router.push("/reviews");
+        }
+      });
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (typeof id !== "string") return;
-
-    getReview(id).then(({ data }) => {
-      if (data) {
-        setReview(data);
-        setIsFavorite(data.isFavorite);
-        setIsBookmarked(data.isBookmarked);
-      } else {
-        router.push("/reviews");
-      }
-    });
-  }, [id]);
+  }, [user, id]);
 
   if (review === null) {
     return null;
@@ -167,9 +165,15 @@ export default function ReviewDetail() {
             <h3>한줄 일기</h3>
             <img alt="userimage" src={review.imageUrl} />
 
-            <div className="content">
-              <div className="sentiment">{review.sentiment}</div>
-              <p>{review.content}</p>
+            <div className="sentiment">
+              <img
+                className="emoji"
+                src={`/icons/emoji/${review.sentiment}.svg`}
+              />
+              <span>
+                {SENTIMENTS.find((s) => s.name === review.sentiment)?.label ||
+                  ""}
+              </span>
             </div>
           </div>
         </div>
@@ -178,7 +182,7 @@ export default function ReviewDetail() {
           <h3>댓글</h3>
           {!isMyReview && (
             <div className="comments-create">
-              <img alt="userimage" src={"/icons/cafe.svg"} />
+              <img alt="userimage" src={review.member.profileImageUrl} />
               <input
                 placeholder="댓글을 남겨주세요"
                 value={commentValue}
@@ -190,7 +194,7 @@ export default function ReviewDetail() {
           <ul className="comments">
             {[1, 1, 2, 3, 1, 2].map((c, i) => (
               <li key={i}>
-                <img alt="userimage" src={"/icons/cafe.svg"} />
+                <img alt="userimage" src={review.member.profileImageUrl} />
                 <div>
                   <div className="name">
                     <div>{"ㅁㅇㄴㄹ"}</div>
@@ -289,27 +293,31 @@ const StyledReviewDetail = styled.div`
 
     .diary {
       padding-top: 32px;
+
       h3 {
         margin-left: 16px;
         margin-bottom: 16px;
       }
 
-      img {
+      > img {
         width: 100%;
         margin-bottom: 10px;
       }
 
-      .content {
-        margin-left: 16px;
+      .sentiment {
+        padding: 4px 8px;
+        background: #e9eafc;
+        border: 1px solid #7884ed;
+        border-radius: 8px;
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 14px;
+        letter-spacing: 0.031em;
+        color: #9ca5f2;
 
-        .sentiment {
-          width: 85px;
-          height: 24px;
-          background: #e9eafc;
-          border: 1px solid #7884ed;
-          border-radius: 8px;
-          padding: 4px 8px;
-          margin-bottom: 4px;
+        .emoji {
+          margin-bottom: -2px;
+          margin-right: 5px;
         }
       }
     }
