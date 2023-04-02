@@ -10,6 +10,7 @@ import { getCourse } from "@/data/axios/course";
 import { useAuthContext } from "@/store/context/AuthContext";
 import { FEATURES, postReview } from "@/data/axios/review";
 import { getCenter } from "@/components/map/naverMap";
+import { NextSeo } from "next-seo";
 
 export default function CourseDetail() {
   const { naverMapEnabled } = useNaverMapContext();

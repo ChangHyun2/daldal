@@ -11,6 +11,7 @@ import Header2 from "@/components/layout/Header2";
 import { PostCourseRequest, postCourse } from "@/data/axios/course";
 import { getEstimate } from "@/utils/getEstimate";
 import { useAuthContext } from "@/store/context/AuthContext";
+import { NextSeo } from "next-seo";
 
 export default function Map() {
   const { user } = useAuthContext();

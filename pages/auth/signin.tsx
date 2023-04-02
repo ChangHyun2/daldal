@@ -8,6 +8,7 @@ import { useAuthContext } from "@/store/context/AuthContext";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { LoginType } from "@/data/axios/login";
+import { NextSeo } from "next-seo";
 
 export default function Signin() {
   const { user, login, bsideLogin } = useAuthContext();

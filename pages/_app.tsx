@@ -15,7 +15,7 @@ import {
   AuthContextProvider,
   useAuthContext,
 } from "@/store/context/AuthContext";
-import Header from "@/components/layout/Header";
+import { DefaultSeo } from "next-seo";
 
 if (process.env.NODE_ENV === "development") {
   // require("../mocks");
@@ -28,18 +28,40 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <AuthContextProvider>
-          <NaverMapContextProvider>
-            <LoadScript>
-              {/* <Header /> */}
-              <Component {...pageProps} />
-            </LoadScript>
-          </NaverMapContextProvider>
-        </AuthContextProvider>
-      </QueryClientProvider>
-    </SessionProvider>
+    <>
+      <DefaultSeo
+        title="Nimble"
+        description="당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요."
+        openGraph={{
+          url: "https://nimble-daldal.vercel.app",
+          title: "Nimble",
+          description:
+            "당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요.",
+          images: [
+            {
+              url: "https://kr.object.ncloudstorage.com/daldal-bucket/logo/logo.svg",
+              width: 800,
+              height: 600,
+              alt: "Og Image Alt",
+              type: "image/svg",
+            },
+          ],
+          siteName: "Nimble",
+        }}
+      />
+      <SessionProvider session={session}>
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider>
+            <NaverMapContextProvider>
+              <LoadScript>
+                {/* <Header /> */}
+                <Component {...pageProps} />
+              </LoadScript>
+            </NaverMapContextProvider>
+          </AuthContextProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </>
   );
 }
 

@@ -13,6 +13,7 @@ import NaverMap from "@/components/map/naverMap";
 import { useRouter } from "next/router";
 import { bookmarkDown } from "@/data/axios/bookmark";
 import { Review, getMyReview, getReview } from "@/data/axios/review";
+import { NextSeo } from "next-seo";
 
 export default function Courses() {
   const { user } = useAuthContext();

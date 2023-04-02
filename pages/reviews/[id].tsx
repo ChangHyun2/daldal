@@ -11,6 +11,7 @@ import { getEstimate } from "@/utils/getEstimate";
 import { f } from "msw/lib/glossary-de6278a9";
 import { favouriteDown, favouriteUp } from "@/data/axios/favourite";
 import { bookmarkDown, bookmarkUp } from "@/data/axios/bookmark";
+import { NextSeo } from "next-seo";
 
 export default function ReviewDetail() {
   const router = useRouter();

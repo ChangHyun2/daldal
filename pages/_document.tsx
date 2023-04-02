@@ -28,30 +28,10 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <NextSeo
-          title="Nimble"
-          description="당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요."
-          openGraph={{
-            type: "website",
-            url: "https://nimble-daldal.vercel.app",
-            title: "Nimble",
-            description:
-              "당신의 인생에도, 당신의 러닝에도 변수가 없도록! 님블 서비스로 사람들과 러닝 코스를 공유해보세요.",
-            images: [
-              {
-                url: "https://kr.object.ncloudstorage.com/daldal-bucket/logo/logo.svg",
-                width: 800,
-                height: 600,
-                alt: "Og Image Alt",
-                type: "image/svg",
-              },
-            ],
-            siteName: "Nimble",
-          }}
-        />
         <Head>
           <link
             rel="shortcut icon"
+            type="image/x-icon"
             href="https://kr.object.ncloudstorage.com/daldal-bucket/logo/logo.ico"
           />
           <title>Nimble</title>
