@@ -22,6 +22,7 @@ export const FEATURES = [
 export type ReviewFeature = (typeof FEATURES)[number]["name"];
 
 export type Review = {
+  [x: string]: any;
   id: string;
   member: Member;
   course: Course;
@@ -33,6 +34,7 @@ export type Review = {
   isBookmarked: true;
   features: ReviewFeature[];
   comments: Comment[];
+  createAt: string;
 };
 
 export type PostReviewRequest = FormData;

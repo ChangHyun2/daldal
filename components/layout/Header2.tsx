@@ -5,10 +5,6 @@ import s from "csd";
 import { useAuthContext } from "@/store/context/AuthContext";
 import { signIn, signOut } from "next-auth/react";
 
-import { IconButton } from "@mui/material";
-import { ArrowDropDownOutlined } from "@mui/icons-material";
-import img from "next/image";
-
 export default function Header2({ ...props }) {
   const { user, setUser } = useAuthContext();
 
